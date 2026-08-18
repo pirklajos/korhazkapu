@@ -94,7 +94,8 @@ final class AppFixtures extends Fixture
             $service = (new Service($institution, $name, ['kardiologiai-szakrendeles','ekg-vizsgalat','ultrahang-diagnosztika','laboratoriumi-mintavetel','betegiranyitas'][$index]))
                 ->setSummary('DEMO szolgáltatás. Részletes tájékoztatás az M2 tartalmi modulban.')
                 ->setDepartment($departments[$index % count($departments)])->setSite($index < 3 ? $main : $outpatient);
-            if ($index === 4) $service->setBuilding($buildings[0])->setFloor($floor)->setRoom($room);
+            if ($index === 1) $service->setBuilding($buildings[0])->setFloor($floor)->setRoom($room)->setLocationDirections('A főbejáraton belépve forduljon jobbra, majd kövesse a kék EKG jelzéseket a 001-es helyiségig.');
+            if ($index === 4) $service->setBuilding($buildings[0])->setFloor($floor)->setRoom($room)->setLocationDirections('A főbejárattól jobbra, közvetlenül az információs pult mellett.');
             $manager->persist($service);
             $services[] = $service;
             $manager->persist((new ContactPoint($institution, 'Információ', 'phone', $institution->getPhone() ?? '+36 1 000 0000'))->setService($service)->setAvailability('Munkanapokon 8:00–16:00'));
