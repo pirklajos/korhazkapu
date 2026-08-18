@@ -16,6 +16,7 @@ abstract class AbstractContent extends AbstractTenantEntity
     #[ORM\Column(type:Types::DATE_IMMUTABLE,nullable:true)] protected ?\DateTimeImmutable $reviewDueAt=null;
     public function __construct(Institution $institution,string $title,string $slug){parent::__construct($institution);$this->title=$title;$this->slug=$slug;}
     public function getTitle():string{return $this->title;} public function setTitle(string $v):self{$this->title=$v;return $this;} public function getSlug():string{return $this->slug;}
+    public function setSlug(string $v):self{$this->slug=$v;return $this;}
     public function getSummary():?string{return $this->summary;} public function setSummary(?string $v):self{$this->summary=$v;return $this;}
     public function getStatus():ContentStatus{return $this->status;} public function setStatus(ContentStatus $v):self{$this->status=$v;return $this;}
     public function setPublicationWindow(?\DateTimeImmutable $from,?\DateTimeImmutable $until):self{$this->publishedAt=$from;$this->expiresAt=$until;return $this;}

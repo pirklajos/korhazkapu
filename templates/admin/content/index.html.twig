@@ -1,11 +1,11 @@
 {% extends 'base.html.twig' %}
 {% block title %}Struktúra és tartalom – {{ institution.shortName }}{% endblock %}
 {% block body %}
-<main id="main-content"><p><a href="{{ path('tenant_admin_dashboard',{institutionSlug:institution.slug}) }}">← Irányítópult</a></p><h1>Struktúra és tartalom</h1><p><strong>{{ institution.name }}</strong></p>
-<div class="summary-grid"><section><h2>Telephelyek</h2><p>{{ sites|length }} elem</p><ul>{% for item in sites %}<li>{{ item.name }}</li>{% endfor %}</ul></section>
-<section><h2>Osztályok</h2><p>{{ departments|length }} elem</p><ul>{% for item in departments %}<li>{{ item.name }}</li>{% endfor %}</ul></section>
-<section><h2>Szolgáltatások</h2><p>{{ services|length }} elem</p><ul>{% for item in services %}<li>{{ item.name }}</li>{% endfor %}</ul></section>
-<section><h2>Tájékoztatók</h2><p>{{ pages|length }} elem</p><ul>{% for item in pages %}<li>{{ item.title }} – {{ item.status.value }}</li>{% endfor %}</ul></section>
+<main id="main-content"><p><a href="{{ path('tenant_admin_dashboard',{institutionSlug:institution.slug}) }}">← Irányítópult</a></p><h1>Struktúra és tartalom</h1><p><strong>{{ institution.name }}</strong> · <a href="{{ path('tenant_admin_media',{institutionSlug:institution.slug}) }}">Médiafájlok</a></p>
+<div class="summary-grid"><section><h2>Telephelyek</h2><p>{{ sites|length }} elem · <a href="{{ path('tenant_admin_crud_new',{institutionSlug:institution.slug,type:'site'}) }}">Új</a></p><ul>{% for item in sites %}<li><a href="{{ path('tenant_admin_crud_edit',{institutionSlug:institution.slug,type:'site',id:item.id}) }}">{{ item.name }}</a></li>{% endfor %}</ul></section>
+<section><h2>Osztályok</h2><p>{{ departments|length }} elem · <a href="{{ path('tenant_admin_crud_new',{institutionSlug:institution.slug,type:'department'}) }}">Új</a></p><ul>{% for item in departments %}<li><a href="{{ path('tenant_admin_crud_edit',{institutionSlug:institution.slug,type:'department',id:item.id}) }}">{{ item.name }}</a></li>{% endfor %}</ul></section>
+<section><h2>Szolgáltatások</h2><p>{{ services|length }} elem · <a href="{{ path('tenant_admin_crud_new',{institutionSlug:institution.slug,type:'service'}) }}">Új</a></p><ul>{% for item in services %}<li><a href="{{ path('tenant_admin_crud_edit',{institutionSlug:institution.slug,type:'service',id:item.id}) }}">{{ item.name }}</a></li>{% endfor %}</ul></section>
+<section><h2>Tájékoztatók</h2><p>{{ pages|length }} elem · <a href="{{ path('tenant_admin_crud_new',{institutionSlug:institution.slug,type:'page'}) }}">Új</a></p><ul>{% for item in pages %}<li><a href="{{ path('tenant_admin_crud_edit',{institutionSlug:institution.slug,type:'page',id:item.id}) }}">{{ item.title }}</a> – {{ item.status.value }}</li>{% endfor %}</ul></section>
 <section><h2>Betegutak</h2><p>{{ journeys|length }} elem</p><ul>{% for item in journeys %}<li>{{ item.title }}</li>{% endfor %}</ul></section>
-<section><h2>Közlemények</h2><p>{{ announcements|length }} elem</p><ul>{% for item in announcements %}<li>{{ item.title }}</li>{% endfor %}</ul></section></div></main>
+<section><h2>Közlemények</h2><p>{{ announcements|length }} elem · <a href="{{ path('tenant_admin_crud_new',{institutionSlug:institution.slug,type:'announcement'}) }}">Új</a></p><ul>{% for item in announcements %}<li><a href="{{ path('tenant_admin_crud_edit',{institutionSlug:institution.slug,type:'announcement',id:item.id}) }}">{{ item.title }}</a></li>{% endfor %}</ul></section></div></main>
 {% endblock %}

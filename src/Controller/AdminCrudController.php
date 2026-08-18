@@ -1,0 +1,77 @@
+<?php
+declare(strict_types=1);
+namespace App\Controller;
+
+use App\Entity\Announcement;
+use App\Entity\ContentStatus;
+use App\Entity\Department;
+use App\Entity\InformationPage;
+use App\Entity\Service;
+use App\Entity\Site;
+use App\Entity\TenantOwnedEntity;
+use App\Entity\User;
+use App\Security\TenantRoleChecker;
+use App\Tenant\TenantContext;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\FormInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
+
+#[IsGranted('ROLE_USER')]
+final class AdminCrudController extends AbstractController
+{
+    private const TYPES=['site'=>Site::class,'department'=>Department::class,'service'=>Service::class,'page'=>InformationPage::class,'announcement'=>Announcement::class];
+
+    #[Route('/i/{institutionSlug}/admin/content/{type}/new',name:'tenant_admin_crud_new',methods:['GET','POST'])]
+    public function create(string $type,Request $request,TenantContext $context,TenantRoleChecker $roles,EntityManagerInterface $em):Response
+    {
+        $this->denyUnlessEditor($roles); $institution=$context->requireInstitution();
+        $entity=match($type){'site'=>new Site($institution,'','',''),'department'=>new Department($institution,'',''),'service'=>new Service($institution,'',''),'page'=>new InformationPage($institution,'',''),'announcement'=>new Announcement($institution,'',''),default=>throw $this->createNotFoundException()};
+        return $this->handle($type,$entity,$request,$em,true);
+    }
+
+    #[Route('/i/{institutionSlug}/admin/content/{type}/{id}/edit',name:'tenant_admin_crud_edit',methods:['GET','POST'])]
+    public function edit(string $type,string $id,Request $request,TenantContext $context,TenantRoleChecker $roles,EntityManagerInterface $em):Response
+    {
+        $this->denyUnlessEditor($roles); $class=self::TYPES[$type]??throw $this->createNotFoundException();
+        $entity=$em->getRepository($class)->find($id)??throw $this->createNotFoundException(); $this->assertCurrentTenant($entity,$context);
+        return $this->handle($type,$entity,$request,$em,false);
+    }
+
+    #[Route('/i/{institutionSlug}/admin/content/{type}/{id}/delete',name:'tenant_admin_crud_delete',methods:['POST'])]
+    public function delete(string $type,string $id,Request $request,TenantContext $context,TenantRoleChecker $roles,EntityManagerInterface $em):Response
+    {
+        $this->denyUnlessEditor($roles); $class=self::TYPES[$type]??throw $this->createNotFoundException(); $entity=$em->getRepository($class)->find($id)??throw $this->createNotFoundException(); $this->assertCurrentTenant($entity,$context);
+        if(!$this->isCsrfTokenValid('delete_'.$type.'_'.$id,(string)$request->request->get('_token')))throw $this->createAccessDeniedException('Érvénytelen CSRF token.');
+        $em->remove($entity);$em->flush();$this->addFlash('success','Az elem törölve.');
+        return $this->redirectToRoute('tenant_admin_content',['institutionSlug'=>$context->requireInstitution()->getSlug()]);
+    }
+
+    private function handle(string $type,TenantOwnedEntity $entity,Request $request,EntityManagerInterface $em,bool $new):Response
+    {
+        $form=$this->form($type,$entity);$form->handleRequest($request);
+        if($form->isSubmitted()&&$form->isValid()){$em->persist($entity);$em->flush();$this->addFlash('success',$new?'Az elem létrejött.':'A módosítások mentve.');return $this->redirectToRoute('tenant_admin_content',['institutionSlug'=>$entity->getInstitution()->getSlug()]);}
+        return $this->render('admin/content/form.html.twig',['form'=>$form,'type'=>$type,'isNew'=>$new,'entity'=>$entity,'institution'=>$entity->getInstitution()]);
+    }
+
+    private function form(string $type,TenantOwnedEntity $entity):FormInterface
+    {
+        $builder=$this->createFormBuilder($entity)->add('slug',TextType::class)->add($type==='site'?'name':'title',TextType::class);
+        if($entity instanceof Site)$builder->remove('title')->add('name')->add('address')->add('mapUrl')->add('accessibility',TextareaType::class,['required'=>false]);
+        elseif($entity instanceof Department)$builder->remove('title')->add('name')->add('summary',TextareaType::class,['required'=>false]);
+        elseif($entity instanceof Service)$builder->remove('title')->add('name')->add('summary',TextareaType::class,['required'=>false])->add('department',EntityType::class,['class'=>Department::class,'choice_label'=>'name','required'=>false])->add('site',EntityType::class,['class'=>Site::class,'choice_label'=>'name','required'=>false]);
+        elseif($entity instanceof InformationPage)$builder->add('summary',TextareaType::class,['required'=>false])->add('category',TextType::class,['required'=>false])->add('status',ChoiceType::class,['choices'=>array_combine(array_map(fn(ContentStatus $s)=>$s->value,ContentStatus::cases()),ContentStatus::cases())]);
+        elseif($entity instanceof Announcement)$builder->add('summary',TextareaType::class,['required'=>false])->add('body',TextareaType::class)->add('type',ChoiceType::class,['choices'=>['Normál'=>'normal','Figyelmeztetés'=>'warning','Sürgős'=>'urgent']])->add('priority',IntegerType::class)->add('status',ChoiceType::class,['choices'=>array_combine(array_map(fn(ContentStatus $s)=>$s->value,ContentStatus::cases()),ContentStatus::cases())]);
+        return $builder->getForm();
+    }
+    private function denyUnlessEditor(TenantRoleChecker $roles):void{$user=$this->getUser();if(!$user instanceof User||(!in_array('ROLE_PLATFORM_ADMIN',$user->getRoles(),true)&&!$roles->hasRole($user,'ROLE_INSTITUTION_ADMIN')&&!$roles->hasRole($user,'ROLE_EDITOR')))throw $this->createAccessDeniedException();}
+    private function assertCurrentTenant(TenantOwnedEntity $entity,TenantContext $context):void{if(!$entity->getInstitution()->getId()->equals($context->requireInstitution()->getId()))throw $this->createAccessDeniedException();}
+}

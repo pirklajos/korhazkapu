@@ -56,12 +56,16 @@
 - Intézményenként 2 telephely, 3 épület/osztály, 5 szolgáltatás, 5 publikált
   tájékoztató, 2 betegút, aktív és lejárt közlemény demo adatai.
 - Tenantjogosultsággal védett admin struktúra- és tartalomáttekintő.
+- CSRF-védett, tenantellenőrzött létrehozás/szerkesztés/törlés telephelyhez,
+  osztályhoz, szolgáltatáshoz, tájékoztatóhoz és közleményhez.
+- Valódi lokális médiafeltöltés kötelező alt szöveggel, 5 MB korláttal és
+  szerveroldali JPEG/PNG/WebP/PDF MIME-engedélylistával; tenantonkénti tárolás.
 
 ## Nyitott feladatok
 
 - Az összes M2–M6 funkció a specifikáció szerinti sorrendben.
-- M2-ben még hátra van a létrehozás/szerkesztés/törlés admin űrlapja, a média
-  tényleges és validált feltöltése, valamint a ProcedureGuide részletes adminja.
+- M2-ben még hátra van az épület/szint/helyiség/kapcsolati pont, betegút és
+  ProcedureGuide részletes CRUD-ja, valamint a média törlési/kiszolgálási útja.
 - Tailwind CSS integráció és vizuális rendszer.
 - Fixture csomag és két demo intézmény.
 - CI workflow véglegesítése a migrációs és funkcionális tesztekkel.
@@ -107,3 +111,7 @@
   szinkronban, intézményenként 2 site/5 service/5 page/2 journey/2 announcement.
 - 2026-08-18: M2 köztes ellenőrzés – 8 teszt, 11 assertion; lint és production
   build sikeres; az admin tartalomáttekintő HTTP 200 választ ad.
+- 2026-08-18: mind az öt fő CRUD új-elem űrlap és a médiaoldal HTTP 200; site
+  létrehozás–szerkesztőoldal–CSRF törlés végponttól végpontig sikeres.
+- 2026-08-18: valós PNG feltöltés MIME/méret/alt ellenőrzéssel sikeres, a
+  tesztadat és tesztfájl utána eltávolítva; 8 teszt és teljes lint sikeres.

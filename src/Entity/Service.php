@@ -16,6 +16,7 @@ class Service extends AbstractTenantEntity
     #[ORM\ManyToOne] #[ORM\JoinColumn(nullable:true,onDelete:'SET NULL')] private ?Room $room=null;
     public function __construct(Institution $institution,string $name,string $slug){parent::__construct($institution);$this->name=$name;$this->slug=$slug;}
     public function getName():string{return $this->name;} public function setName(string $v):self{$this->name=$v;return $this;} public function getSlug():string{return $this->slug;}
+    public function setSlug(string $v):self{$this->slug=$v;return $this;}
     public function getSummary():?string{return $this->summary;} public function setSummary(?string $v):self{$this->summary=$v;return $this;}
     public function getDepartment():?Department{return $this->department;} public function setDepartment(?Department $v):self{if($v)$this->assertSameTenant($v);$this->department=$v;return $this;}
     public function getSite():?Site{return $this->site;} public function setSite(?Site $v):self{if($v)$this->assertSameTenant($v);$this->site=$v;return $this;}

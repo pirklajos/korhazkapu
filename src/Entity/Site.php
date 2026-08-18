@@ -17,6 +17,7 @@ class Site extends AbstractTenantEntity
     public function __construct(Institution $institution, string $name, string $slug, string $address) { parent::__construct($institution); $this->name=$name; $this->slug=$slug; $this->address=$address; }
     public function getName(): string { return $this->name; } public function setName(string $v): self {$this->name=$v;return $this;}
     public function getSlug(): string { return $this->slug; } public function getAddress(): string { return $this->address; }
+    public function setSlug(string $v): self {$this->slug=$v;return $this;}
     public function setAddress(string $v): self {$this->address=$v;return $this;} public function getMapUrl(): ?string{return $this->mapUrl;}
     public function setMapUrl(?string $v): self {$this->mapUrl=$v;return $this;} public function getAccessibility(): ?string{return $this->accessibility;}
     public function setAccessibility(?string $v): self {$this->accessibility=$v;return $this;} public function isActive(): bool{return $this->active;}
