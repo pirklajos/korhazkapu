@@ -3,9 +3,9 @@
 ## Aktuális állapot
 
 - Utolsó frissítés: 2026-08-18
-- Aktuális mérföldkő: M3 – completed
-- Következő konkrét lépés: M4 publikus listák, adatlapok, kapcsolatok,
-  helyszínek és nyomtatási nézetek.
+- Aktuális mérföldkő: M4 – completed
+- Következő konkrét lépés: M5 adatbázis-alapú keresés, szinonimák,
+  visszajelzés és üres állapotok.
 - Ismert blokkoló tényező: nincs.
 
 ## Mérföldkövek
@@ -16,7 +16,7 @@
 | M1 | completed | 2 migráció, fixture, schema sync, 6 teszt, login és két publikus tenant sikeres | Helyi PostgreSQL 16-on ellenőrizve |
 | M2 | completed | Séma-validáció, 10 teszt, admin HTTP smoke teszt és production build sikeres | Teljes struktúra-, tartalom- és médiaadminisztráció |
 | M3 | completed | 12 teszt, 23 assertion, séma-validáció, admin HTTP smoke és production build sikeres | Workflow, verziók, audit és feladatirányítópult |
-| M4 | pending | | Publikus reszponzív felület |
+| M4 | completed | 14 publikus HTTP smoke, lejárt tartalom 404, 12 teszt és production build sikeres | Reszponzív listák, adatlapok, helyszínek, kapcsolatok és nyomtatás |
 | M5 | pending | | Kereső, sablonok és visszajelzés |
 | M6 | pending | | Minőségbiztosítás és átadás |
 
@@ -70,10 +70,14 @@
   publikálás előtti automatikus verzióval és piszkozatkénti visszaállítással.
 - Tenantolt auditnapló, felülvizsgálati határidő és valós tartalmi
   feladatmutatókat megjelenítő admin irányítópult.
+- Témázható, reszponzív publikus telephely-, osztály-, ellátás-, vizsgálati
+  útmutató-, tájékoztató-, betegút-, közlemény- és kapcsolati felületek.
+- Betegközpontú navigáció, morzsanavigáció, strukturált helyszínmegjelenítés és
+  nyomtatási stílusok; lejárt vagy nem publikált tartalom publikus tiltása.
 
 ## Nyitott feladatok
 
-- Az összes M4–M6 funkció a specifikáció szerinti sorrendben.
+- Az összes M5–M6 funkció a specifikáció szerinti sorrendben.
 - Tailwind CSS integráció és vizuális rendszer.
 - CI workflow véglegesítése a migrációs és funkcionális tesztekkel.
 

@@ -6,6 +6,7 @@ namespace App\Controller;
 
 use App\Entity\Announcement;
 use App\Entity\Department;
+use App\Entity\InformationPage;
 use App\Entity\PatientJourney;
 use App\Entity\Service;
 use App\Entity\Site;
@@ -34,6 +35,7 @@ final class HomeController extends AbstractController
             'services' => array_slice($forInstitution(Service::class), 0, 6),
             'announcements' => array_slice($publicOnly($forInstitution(Announcement::class)), 0, 3),
             'journeys' => array_slice($publicOnly($forInstitution(PatientJourney::class)), 0, 3),
+            'pages' => array_slice($publicOnly($forInstitution(InformationPage::class)), 0, 4),
         ]);
     }
 
