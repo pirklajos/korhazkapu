@@ -37,7 +37,8 @@ elején egy központi `TenantContext` oldja fel az intézményt:
 3. adminban platformadmin által választott, auditált intézményből.
 
 A tenantolt repository-k nem fogadnak opcionális intézményt: a context kötelező,
-és újrafelhasználható Doctrine-szűrés ad második védelmi réteget. Íráskor voter és
+és a `TenantOwnedEntity` markerre épülő Doctrine SQL-filter ad második, központi
+védelmi réteget. Íráskor voter és
 entitásszintű invariáns is ellenőrzi a tenant-egyezést. A platformadmin explicit
 tenantváltása nem kapcsolja ki a szűrést, csak a context értékét módosítja.
 

@@ -14,7 +14,16 @@ docker compose up --build -d
 docker compose exec app php bin/console doctrine:migrations:migrate --no-interaction
 ```
 
-Az alkalmazás alapértelmezetten a <http://localhost:8000> címen érhető el.
+Az alkalmazás alapértelmezetten a <http://localhost:8000> címen érhető el. A két
+M1 demo intézmény fejlesztői útvonalai:
+
+- `http://localhost:8000/i/demo-epc-hk`
+- `http://localhost:8000/i/demo-duna`
+
+A nem-production fixture felhasználók közös jelszava
+`Demo-Only-ChangeMe-2026!`. A platformadmin e-mail-címe
+`platform.admin@demo.invalid`; az intézményi szerepkörök címei és használata az
+[admin útmutatóban](docs/ADMIN_GUIDE.md) található.
 
 ## Fejlesztői parancsok
 

@@ -1,3 +1,14 @@
-body {
-    background-color: skyblue;
-}
+:root { --color-primary: #005a70; --color-background: #fff; --color-text: #172b35; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--color-background); color: var(--color-text); font: 1rem/1.6 system-ui, sans-serif; }
+main { width: min(70rem, calc(100% - 2rem)); margin: 3rem auto; }
+.site-header { padding: 1rem max(1rem, calc((100% - 70rem) / 2)); background: var(--color-primary); color: white; }
+.skip-link { position: absolute; left: .5rem; top: -5rem; padding: .75rem; background: white; z-index: 10; }
+.skip-link:focus { top: .5rem; }
+.auth-shell { min-height: 80vh; display: grid; place-items: center; }
+.auth-card { width: min(28rem, 100%); display: grid; gap: .75rem; padding: 2rem; border: 1px solid #ccd5d8; border-radius: .75rem; }
+input, button { min-height: 44px; padding: .65rem .8rem; font: inherit; }
+button { border: 0; border-radius: .4rem; background: var(--color-primary); color: white; font-weight: 700; cursor: pointer; }
+:focus-visible { outline: 3px solid #f2a900; outline-offset: 3px; }
+.alert-danger { padding: .75rem; border-left: .3rem solid #b42318; background: #fef3f2; }
+.demo-label { display: inline-block; padding: .25rem .5rem; background: #fff3cd; font-weight: 700; }

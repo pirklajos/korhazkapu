@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+{% block title %}Admin irányítópult – KórházKapu{% endblock %}
+{% block body %}
+<main id="main-content">
+    <h1>Admin irányítópult</h1>
+    {% if currentInstitution %}<p>Aktív intézmény: <strong>{{ currentInstitution.name }}</strong></p>{% endif %}
+    {% if isPlatformAdmin %}
+        <section aria-labelledby="tenant-switch-title">
+            <h2 id="tenant-switch-title">Intézményváltó</h2>
+            <div class="tenant-list">
+                {% for institution in institutions %}
+                    <form method="post" action="{{ path('admin_tenant_select', {slug: institution.slug}) }}">
+                        <input type="hidden" name="_token" value="{{ csrf_token('select_tenant_' ~ institution.slug) }}">
+                        <button type="submit">{{ institution.name }}</button>
+                    </form>
+                {% else %}<p>Nincs aktív intézmény.</p>{% endfor %}
+            </div>
+        </section>
+    {% endif %}
+    <p><a href="{{ path('app_logout') }}">Kijelentkezés</a></p>
+</main>
+{% endblock %}

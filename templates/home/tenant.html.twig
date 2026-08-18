@@ -1,0 +1,7 @@
+{% extends 'base.html.twig' %}
+{% block title %}{{ institution.name }}{% endblock %}
+{% block stylesheets %}{{ parent() }}{% if institution.theme %}<style>:root { {% for name, value in institution.theme.cssVariables %}{{ name }}: {{ value }};{% endfor %} }</style>{% endif %}{% endblock %}
+{% block body %}
+<header class="site-header"><strong>{{ institution.shortName }}</strong></header>
+<main id="main-content"><p class="demo-label">DEMO intézmény</p><h1>{{ institution.name }}</h1><p>{{ institution.centralAddress }}</p>{% if institution.phone %}<p><a href="tel:{{ institution.phone|replace({' ': ''}) }}">{{ institution.phone }}</a></p>{% endif %}{% if app.user %}<p><a href="{{ path('tenant_admin_dashboard', {institutionSlug: institution.slug}) }}">Admin irányítópult</a></p>{% endif %}</main>
+{% endblock %}

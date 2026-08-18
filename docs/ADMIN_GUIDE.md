@@ -1,7 +1,24 @@
 # Admin útmutató
 
-Az adminfelület implementációja az M1–M3 mérföldkövekben készül el. Ez a fájl a
-végleges kezelési útmutató helye, és csak ténylegesen elérhető funkciókkal bővül.
+Az M1 admin-alap a `/login` címen érhető el. Fejlesztői fixture betöltése után a
+közös, kizárólag demo jelszó: `Demo-Only-ChangeMe-2026!`.
+
+| Szerep | Demo e-mail |
+|---|---|
+| Platformadmin | `platform.admin@demo.invalid` |
+| Intézményi admin | `institution.admin@demo.invalid` |
+| Telephelyadmin | `site.admin@demo.invalid` |
+| Szerkesztő | `editor@demo.invalid` |
+| Szakmai ellenőr | `medical.reviewer@demo.invalid` |
+| Publikáló | `publisher@demo.invalid` |
+| Auditor | `auditor@demo.invalid` |
+
+A második intézmény elkülönített adminja:
+`institution.admin@demo-duna.invalid`.
+
+Platformadmin az `/admin` irányítópulton válthat aktív intézményt. Intézményi
+felhasználó fejlesztésben a `/i/{slug}/admin` útvonalat használja; domainalapú
+feloldásnál az `/admin` útvonal megfelelő.
 
 Tervezett fő folyamatok:
 
@@ -11,4 +28,4 @@ Tervezett fő folyamatok:
 4. közlemények, média, szinonimák és felhasználói tagságok kezelése;
 5. verziók, lejáratok, visszajelzések és auditnapló áttekintése.
 
-Jelenleg nincs kész admin útvonal; a dokumentum ezt szándékosan nem állítja.
+A tartalmi CRUD és publikálási modulok M2–M3-ban készülnek el.

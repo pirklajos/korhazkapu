@@ -3,9 +3,9 @@
 ## Aktuális állapot
 
 - Utolsó frissítés: 2026-08-18
-- Aktuális mérföldkő: M0 – elkészült; M1 következik
-- Következő konkrét lépés: M0 ellenőrzése után az M1 intézmény-, téma-,
-  felhasználó- és tagsági modelljének megvalósítása.
+- Aktuális mérföldkő: M1 – implementálva, futtatási ellenőrzésre vár
+- Következő konkrét lépés: PostgreSQL migráció, fixture és funkcionális tesztek
+  futtatása Docker-képes környezetben; siker esetén M2 megkezdése.
 - Ismert blokkoló tényező: a jelenlegi hoston nincs Docker/Compose, Composer,
   illetve PHP DOM/XML bővítmény; a teljes konténeres build helyben itt nem
   futtatható. A repository Docker image-e ezeket biztosítja.
@@ -15,7 +15,7 @@
 | Mérföldkő | Állapot | Ellenőrzés | Megjegyzés |
 |---|---|---|---|
 | M0 | completed | Composer-validáció, lint, PHP syntax és YAML ellenőrzés sikeres | A teljes Docker build host-eszköz hiányában CI-ben ellenőrizendő |
-| M1 | pending | | Alkalmazásmag és tenantkezelés |
+| M1 | in_progress | PHP/YAML/Twig/container lint, Doctrine mapping és tenantizoláció sikeres | PostgreSQL migráció és fixture Docker nélküli hoston nem ellenőrizhető |
 | M2 | pending | | Struktúra és tartalomkezelés |
 | M3 | pending | | Workflow, verziók és audit |
 | M4 | pending | | Publikus reszponzív felület |
@@ -42,16 +42,27 @@
 - PHP 8.3 alkalmazás- és PostgreSQL 16 adatbázis-konténer konfiguráció.
 - Egységes `composer lint`, `test`, `build` és `check` parancsok.
 - M0 architektúra-, telepítési-, admin- és biztonsági dokumentációs alap.
+- UUID-alapú Institution, InstitutionTheme, User és Membership entitások,
+  PostgreSQL migrációval.
+- Domain- és `/i/{slug}` útvonalalapú tenantfeloldás, központi TenantContext és
+  `TenantOwnedEntity`-alapú Doctrine SQL-filter.
+- Tenant-határt ellenőrző intézményi voter és intézményi szerepkör-ellenőrzés.
+- Rate-limitált, CSRF-védett form login és admin intézményváltó platformadminnak.
+- Két eltérő arculatú demo intézmény és minden fő szerepkörhöz fejlesztői user.
 
 ## Nyitott feladatok
 
-- Az összes M1–M6 funkció a specifikáció szerinti sorrendben.
+- Az összes M2–M6 funkció a specifikáció szerinti sorrendben.
 - Tailwind CSS integráció és vizuális rendszer.
 - Fixture csomag és két demo intézmény.
 - CI workflow véglegesítése a migrációs és funkcionális tesztekkel.
 
 ## Ismert hibák és technikai adósság
 
+- Az M0 commit (`289b585`) pushát a GitHub visszautasította, mert a jelenlegi
+  OAuth token nem rendelkezik `workflow` scope-pal az új CI workflow feltöltéséhez.
+- A platformadmin tenantváltás teljes auditnaplózása az M3 AuditLog moduljával
+  készül el; az M1-ben a jogosultság, CSRF és session-alapú váltás működik.
 - A development konténer induláskor `composer install`-t futtat; később külön
   entrypointtal és cache-elt vendor volumennel finomítható.
 - A PHP beépített webszervere csak helyi fejlesztési alap; productionben
@@ -73,3 +84,9 @@
   deklarálva van. Ellenőrző parancs: `docker compose run --rm app composer check`.
 - 2026-08-18: Docker/Compose parancs nem érhető el ezen a hoston, ezért
   `docker compose config` és image build nem futott.
+- 2026-08-18: M1 PHP syntax, container-, 24 YAML- és 5 Twig-lint – sikeres.
+- 2026-08-18: Doctrine entitásmapping `--skip-sync` ellenőrzése – sikeres.
+- 2026-08-18: hét M1 útvonal felismerése – sikeres.
+- 2026-08-18: tenant szerepkör-izoláció közvetlen domainellenőrzése – sikeres.
+- 2026-08-18: PHPUnit és üres PostgreSQL migráció továbbra sem futtatható a
+  host hiányzó DOM és `pdo_pgsql` bővítménye, illetve Docker hiánya miatt.

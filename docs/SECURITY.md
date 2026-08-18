@@ -22,8 +22,9 @@ intézmények adatszigetelése, a médiafájlok és az auditnapló.
 
 ## Biztonsági alapkonfiguráció
 
-Az M1–M6 során készül el a login rate limiter, secure/HttpOnly/SameSite cookie,
-CSP és további HTTP headerek, jogosultsági voter-ek, feltöltésvalidáció és audit.
+Az M1-ben elkészült a login rate limiter, tenant SQL-filter és az első
+objektumszintű voter. Az M2–M6 során készül el a secure/HttpOnly/SameSite cookie,
+CSP és további HTTP headerek, feltöltésvalidáció és teljes audit.
 Production secret nem kerülhet a repositoryba vagy fixture-be.
 
 ## Adatvédelmi korlát
