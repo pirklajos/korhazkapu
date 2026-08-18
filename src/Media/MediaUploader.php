@@ -17,4 +17,14 @@ final readonly class MediaUploader
         $file->move($target,$name);
         return new MediaAsset($institution,$originalName,$relative,$mime,$size,trim($altText));
     }
+    public function path(MediaAsset $asset):string
+    {
+        $root=$this->projectDir.'/var/uploads';$path=$root.'/'.$asset->getStoragePath();$realRoot=realpath($root);$realPath=realpath($path);
+        if($realRoot===false||$realPath===false||!str_starts_with($realPath,$realRoot.DIRECTORY_SEPARATOR))throw new \RuntimeException('A médiafájl nem található.');
+        return $realPath;
+    }
+    public function delete(MediaAsset $asset):void
+    {
+        try{$path=$this->path($asset);}catch(\RuntimeException){return;}if(!unlink($path))throw new \RuntimeException('A médiafájl nem törölhető.');
+    }
 }

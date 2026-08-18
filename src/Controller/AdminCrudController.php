@@ -3,9 +3,15 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\Announcement;
+use App\Entity\Building;
+use App\Entity\ContactPoint;
 use App\Entity\ContentStatus;
 use App\Entity\Department;
 use App\Entity\InformationPage;
+use App\Entity\Floor;
+use App\Entity\PatientJourney;
+use App\Entity\ProcedureGuide;
+use App\Entity\Room;
 use App\Entity\Service;
 use App\Entity\Site;
 use App\Entity\TenantOwnedEntity;
@@ -28,13 +34,14 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_USER')]
 final class AdminCrudController extends AbstractController
 {
-    private const TYPES=['site'=>Site::class,'department'=>Department::class,'service'=>Service::class,'page'=>InformationPage::class,'announcement'=>Announcement::class];
+    private const TYPES=['site'=>Site::class,'building'=>Building::class,'floor'=>Floor::class,'room'=>Room::class,'department'=>Department::class,'service'=>Service::class,'contact'=>ContactPoint::class,'page'=>InformationPage::class,'guide'=>ProcedureGuide::class,'journey'=>PatientJourney::class,'announcement'=>Announcement::class];
 
     #[Route('/i/{institutionSlug}/admin/content/{type}/new',name:'tenant_admin_crud_new',methods:['GET','POST'])]
     public function create(string $type,Request $request,TenantContext $context,TenantRoleChecker $roles,EntityManagerInterface $em):Response
     {
         $this->denyUnlessEditor($roles); $institution=$context->requireInstitution();
-        $entity=match($type){'site'=>new Site($institution,'','',''),'department'=>new Department($institution,'',''),'service'=>new Service($institution,'',''),'page'=>new InformationPage($institution,'',''),'announcement'=>new Announcement($institution,'',''),default=>throw $this->createNotFoundException()};
+        $first=fn(string $class)=>$em->getRepository($class)->findOneBy(['institution'=>$institution])??throw $this->createNotFoundException('Előbb hozd létre a szükséges szülőelemet.');
+        $entity=match($type){'site'=>new Site($institution,'','',''),'building'=>new Building($institution,$first(Site::class),''),'floor'=>new Floor($institution,$first(Building::class),''),'room'=>new Room($institution,$first(Floor::class),''),'department'=>new Department($institution,'',''),'service'=>new Service($institution,'',''),'contact'=>new ContactPoint($institution,'','phone',''),'page'=>new InformationPage($institution,'',''),'guide'=>new ProcedureGuide($institution,'',''),'journey'=>new PatientJourney($institution,'',''),'announcement'=>new Announcement($institution,'',''),default=>throw $this->createNotFoundException()};
         return $this->handle($type,$entity,$request,$em,true);
     }
 
@@ -64,11 +71,19 @@ final class AdminCrudController extends AbstractController
 
     private function form(string $type,TenantOwnedEntity $entity):FormInterface
     {
-        $builder=$this->createFormBuilder($entity)->add('slug',TextType::class)->add($type==='site'?'name':'title',TextType::class);
+        $builder=$this->createFormBuilder($entity);
+        if(in_array($type,['site','department','service','page','guide','journey','announcement'],true))$builder->add('slug',TextType::class,['label'=>'URL-azonosító']);
+        $builder->add(in_array($type,['site','building','floor','room','department','service'],true)?'name':(in_array($type,['page','guide','journey','announcement'],true)?'title':'label'),TextType::class,['label'=>in_array($type,['page','guide','journey','announcement'],true)?'Cím':'Név']);
         if($entity instanceof Site)$builder->remove('title')->add('name')->add('address')->add('mapUrl')->add('accessibility',TextareaType::class,['required'=>false]);
+        elseif($entity instanceof Building)$builder->add('site',EntityType::class,['class'=>Site::class,'choice_label'=>'name'])->add('code',TextType::class,['required'=>false,'label'=>'Épületkód']);
+        elseif($entity instanceof Floor)$builder->add('building',EntityType::class,['class'=>Building::class,'choice_label'=>'name'])->add('levelNumber',IntegerType::class,['required'=>false,'label'=>'Szint száma']);
+        elseif($entity instanceof Room)$builder->add('floor',EntityType::class,['class'=>Floor::class,'choice_label'=>'name'])->add('number',TextType::class,['required'=>false,'label'=>'Ajtó/terem száma']);
         elseif($entity instanceof Department)$builder->remove('title')->add('name')->add('summary',TextareaType::class,['required'=>false]);
         elseif($entity instanceof Service)$builder->remove('title')->add('name')->add('summary',TextareaType::class,['required'=>false])->add('department',EntityType::class,['class'=>Department::class,'choice_label'=>'name','required'=>false])->add('site',EntityType::class,['class'=>Site::class,'choice_label'=>'name','required'=>false]);
+        elseif($entity instanceof ContactPoint)$builder->add('type',ChoiceType::class,['label'=>'Kapcsolat típusa','choices'=>['Telefon'=>'phone','E-mail'=>'email','Weboldal'=>'url','Személyes ügyintézés'=>'in_person']])->add('value',TextType::class,['label'=>'Elérhetőség'])->add('availability',TextareaType::class,['required'=>false,'label'=>'Elérhetőségi idő'])->add('department',EntityType::class,['class'=>Department::class,'choice_label'=>'name','required'=>false,'label'=>'Osztály'])->add('service',EntityType::class,['class'=>Service::class,'choice_label'=>'name','required'=>false,'label'=>'Ellátás']);
         elseif($entity instanceof InformationPage)$builder->add('summary',TextareaType::class,['required'=>false])->add('category',TextType::class,['required'=>false])->add('status',ChoiceType::class,['choices'=>array_combine(array_map(fn(ContentStatus $s)=>$s->value,ContentStatus::cases()),ContentStatus::cases())]);
+        elseif($entity instanceof ProcedureGuide)$builder->add('summary',TextareaType::class,['required'=>false,'label'=>'Rövid összefoglaló'])->add('purpose',TextareaType::class,['required'=>false,'label'=>'A vizsgálat célja'])->add('durationMinutes',IntegerType::class,['required'=>false,'label'=>'Időtartam percben'])->add('service',EntityType::class,['class'=>Service::class,'choice_label'=>'name','required'=>false,'label'=>'Kapcsolódó ellátás'])->add('status',ChoiceType::class,['label'=>'Állapot','choices'=>array_combine(array_map(fn(ContentStatus $s)=>$s->value,ContentStatus::cases()),ContentStatus::cases())]);
+        elseif($entity instanceof PatientJourney)$builder->add('summary',TextareaType::class,['required'=>false,'label'=>'Rövid összefoglaló'])->add('targetAudience',TextType::class,['required'=>false,'label'=>'Célcsoport'])->add('status',ChoiceType::class,['label'=>'Állapot','choices'=>array_combine(array_map(fn(ContentStatus $s)=>$s->value,ContentStatus::cases()),ContentStatus::cases())]);
         elseif($entity instanceof Announcement)$builder->add('summary',TextareaType::class,['required'=>false])->add('body',TextareaType::class)->add('type',ChoiceType::class,['choices'=>['Normál'=>'normal','Figyelmeztetés'=>'warning','Sürgős'=>'urgent']])->add('priority',IntegerType::class)->add('status',ChoiceType::class,['choices'=>array_combine(array_map(fn(ContentStatus $s)=>$s->value,ContentStatus::cases()),ContentStatus::cases())]);
         return $builder->getForm();
     }

@@ -3,11 +3,16 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\Announcement;
+use App\Entity\Building;
+use App\Entity\ContactPoint;
 use App\Entity\Department;
 use App\Entity\InformationPage;
+use App\Entity\Floor;
 use App\Entity\PatientJourney;
 use App\Entity\Service;
 use App\Entity\Site;
+use App\Entity\ProcedureGuide;
+use App\Entity\Room;
 use App\Entity\User;
 use App\Security\TenantRoleChecker;
 use App\Tenant\TenantContext;
@@ -27,6 +32,6 @@ final class AdminContentController extends AbstractController
         $user=$this->getUser(); $institution=$context->requireInstitution();
         if (!$user instanceof User || (!in_array('ROLE_PLATFORM_ADMIN',$user->getRoles(),true) && !$roles->hasRole($user,'ROLE_INSTITUTION_ADMIN') && !$roles->hasRole($user,'ROLE_EDITOR') && !$roles->hasRole($user,'ROLE_AUDITOR'))) throw $this->createAccessDeniedException();
         $find=fn(string $class):array=>$em->getRepository($class)->findBy(['institution'=>$institution]);
-        return $this->render('admin/content/index.html.twig',['institution'=>$institution,'sites'=>$find(Site::class),'departments'=>$find(Department::class),'services'=>$find(Service::class),'pages'=>$find(InformationPage::class),'journeys'=>$find(PatientJourney::class),'announcements'=>$find(Announcement::class)]);
+        return $this->render('admin/content/index.html.twig',['institution'=>$institution,'sites'=>$find(Site::class),'buildings'=>$find(Building::class),'floors'=>$find(Floor::class),'rooms'=>$find(Room::class),'departments'=>$find(Department::class),'services'=>$find(Service::class),'contacts'=>$find(ContactPoint::class),'pages'=>$find(InformationPage::class),'guides'=>$find(ProcedureGuide::class),'journeys'=>$find(PatientJourney::class),'announcements'=>$find(Announcement::class)]);
     }
 }

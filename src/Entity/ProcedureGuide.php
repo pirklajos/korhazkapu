@@ -17,5 +17,6 @@ class ProcedureGuide extends AbstractContent
     /** @var array<string,mixed> */ #[ORM\Column(type:Types::JSON)] private array $aftercare=[];
     public function setService(?Service $v):self{if($v)$this->assertSameTenant($v);$this->service=$v;return $this;}
     public function setPurpose(?string $v):self{$this->purpose=$v;return $this;} public function setDurationMinutes(?int $v):self{$this->durationMinutes=$v;return $this;}
+    public function getService():?Service{return $this->service;} public function getPurpose():?string{return $this->purpose;} public function getDurationMinutes():?int{return $this->durationMinutes;}
     /** @param array<string,mixed> $v */ public function setPreparation(array $v):self{$this->preparation=$v;return $this;} /** @param list<string> $v */ public function setRequiredDocuments(array $v):self{$this->requiredDocuments=$v;return $this;}
 }
