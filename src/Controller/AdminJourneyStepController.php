@@ -3,7 +3,10 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\JourneyStep;
+use App\Entity\Building;
+use App\Entity\Floor;
 use App\Entity\PatientJourney;
+use App\Entity\Room;
 use App\Entity\User;
 use App\Security\TenantRoleChecker;
 use App\Tenant\TenantContext;
@@ -12,6 +15,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -43,7 +48,8 @@ final class AdminJourneyStepController extends AbstractController
 
     private function handle(JourneyStep $step,Request $request,EntityManagerInterface $em,bool $new):Response
     {
-        $form=$this->createFormBuilder($step)->add('position',IntegerType::class,['label'=>'Sorrend'])->add('title',TextType::class,['label'=>'Lépés címe'])->add('description',TextareaType::class,['label'=>'Leírás'])->add('location',TextType::class,['required'=>false,'label'=>'Helyszín'])->add('action',TextareaType::class,['required'=>false,'label'=>'Beteg teendője'])->add('documents',TextareaType::class,['mapped'=>false,'required'=>false,'label'=>'Szükséges dokumentumok (soronként)','data'=>implode("\n",$step->getRequiredDocuments())])->getForm();$form->handleRequest($request);
+        $form=$this->createFormBuilder($step,['attr'=>['data-controller'=>'journey-location']])->add('position',IntegerType::class,['label'=>'Sorrend'])->add('title',TextType::class,['label'=>'Lépés címe'])->add('description',TextareaType::class,['label'=>'Leírás'])->add('building',EntityType::class,['class'=>Building::class,'choice_label'=>'name','required'=>false,'placeholder'=>'Válassz épületet','label'=>'Épület','attr'=>['data-journey-location-target'=>'building','data-action'=>'change->journey-location#buildingChanged']])->add('floor',EntityType::class,['class'=>Floor::class,'choice_label'=>static fn(Floor $floor):string=>$floor->getBuilding()->getName().' – '.$floor->getName(),'choice_attr'=>static fn(Floor $floor):array=>['data-building-id'=>(string)$floor->getBuilding()->getId()],'required'=>false,'placeholder'=>'Válassz szintet','label'=>'Szint','attr'=>['data-journey-location-target'=>'floor','data-action'=>'change->journey-location#floorChanged']])->add('room',EntityType::class,['class'=>Room::class,'choice_label'=>static fn(Room $room):string=>$room->getFloor()->getBuilding()->getName().' – '.$room->getFloor()->getName().' – '.$room->getName().($room->getNumber()?' ('.$room->getNumber().')':''),'choice_attr'=>static fn(Room $room):array=>['data-floor-id'=>(string)$room->getFloor()->getId()],'required'=>false,'placeholder'=>'Válassz helyiséget','label'=>'Helyiség','attr'=>['data-journey-location-target'=>'room']])->add('location',TextType::class,['required'=>false,'label'=>'További helyszíni útmutatás'])->add('action',TextareaType::class,['required'=>false,'label'=>'Beteg teendője'])->add('documents',TextareaType::class,['mapped'=>false,'required'=>false,'label'=>'Szükséges dokumentumok (soronként)','data'=>implode("\n",$step->getRequiredDocuments())])->getForm();$form->handleRequest($request);
+        if($form->isSubmitted()){$building=$step->getBuilding();$floor=$step->getFloor();$room=$step->getRoom();if($floor&&(!$building||!$floor->getBuilding()->getId()->equals($building->getId())))$form->get('floor')->addError(new FormError('A kiválasztott szint nem ehhez az épülethez tartozik.'));if($room&&(!$floor||!$room->getFloor()->getId()->equals($floor->getId())))$form->get('room')->addError(new FormError('A kiválasztott helyiség nem ehhez a szinthez tartozik.'));}
         if($form->isSubmitted()&&$form->isValid()){$documents=array_values(array_filter(array_map('trim',preg_split('/\R/',(string)$form->get('documents')->getData())?:[])));$step->setRequiredDocuments($documents);$em->persist($step);$em->flush();$this->addFlash('success',$new?'A betegút lépése létrejött.':'A betegút lépése frissült.');return $this->redirectToJourney($step->getJourney());}
         return $this->render('admin/content/journey_step_form.html.twig',['form'=>$form,'step'=>$step,'journey'=>$step->getJourney(),'institution'=>$step->getInstitution(),'isNew'=>$new]);
     }
