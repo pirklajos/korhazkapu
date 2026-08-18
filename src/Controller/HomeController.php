@@ -36,4 +36,12 @@ final class HomeController extends AbstractController
             'journeys' => array_slice($publicOnly($forInstitution(PatientJourney::class)), 0, 3),
         ]);
     }
+
+    #[Route('/i/{institutionSlug}/betegutak/{slug}', name: 'tenant_journey_show', requirements: ['institutionSlug' => '[a-z0-9]+(?:-[a-z0-9]+)*', 'slug' => '[a-z0-9]+(?:-[a-z0-9]+)*'], methods: ['GET'])]
+    public function journey(string $slug,TenantContext $context,EntityManagerInterface $entityManager):Response
+    {
+        $institution=$context->requireInstitution();$journey=$entityManager->getRepository(PatientJourney::class)->findOneBy(['institution'=>$institution,'slug'=>$slug]);
+        if(!$journey||!$journey->isPubliclyVisible())throw $this->createNotFoundException('A betegút nem található.');
+        return $this->render('home/journey.html.twig',['institution'=>$institution,'journey'=>$journey]);
+    }
 }

@@ -35,7 +35,7 @@
     </div></div></section>
 
     <section id="journeys" class="public-section public-container"><div class="public-section-heading"><div><span class="public-kicker">Felkészülés</span><h2>Kiemelt betegutak</h2></div></div><div class="public-journey-grid">
-        {% for journey in journeys %}<article><div class="public-step-number">{{ loop.index }}</div><div><h3>{{ journey.title }}</h3><p>{{ journey.summary }}</p><span>{{ journey.steps|length }} lépésből álló útmutató</span></div><a href="#contact" aria-label="{{ journey.title }} megnyitása">→</a></article>{% else %}<p>A betegutak feltöltése folyamatban van.</p>{% endfor %}
+        {% for journey in journeys %}<article><div class="public-step-number">{{ loop.index }}</div><div><h3>{{ journey.title }}</h3><p>{{ journey.summary }}</p><span>{{ journey.steps|length }} lépésből álló útmutató</span></div><a href="{{ path('tenant_journey_show',{institutionSlug:institution.slug,slug:journey.slug}) }}" aria-label="{{ journey.title }} megnyitása">→</a></article>{% else %}<p>A betegutak feltöltése folyamatban van.</p>{% endfor %}
     </div></section>
 
     <section id="sites" class="public-section public-section-dark"><div class="public-container"><div class="public-section-heading"><div><span class="public-kicker">Helyszínek</span><h2>Telephelyeink</h2></div></div><div class="public-site-grid">
