@@ -3,12 +3,10 @@
 ## Aktuális állapot
 
 - Utolsó frissítés: 2026-08-18
-- Aktuális mérföldkő: M2 – Struktúra és tartalomkezelés
-- Következő konkrét lépés: térbeli és szervezeti entitások, migráció és demo
-  struktúraadatok megvalósítása, majd tartalmi entitások és admin CRUD.
-- Ismert blokkoló tényező: a jelenlegi hoston nincs Docker/Compose, Composer,
-  illetve PHP DOM/XML bővítmény; a teljes konténeres build helyben itt nem
-  futtatható. A repository Docker image-e ezeket biztosítja.
+- Aktuális mérföldkő: M2 – completed
+- Következő konkrét lépés: M3 szerkesztői workflow, verziók, auditnapló és
+  felülvizsgálati határidők.
+- Ismert blokkoló tényező: nincs.
 
 ## Mérföldkövek
 
@@ -16,7 +14,7 @@
 |---|---|---|---|
 | M0 | completed | Composer-validáció, lint, PHP syntax és YAML ellenőrzés sikeres | A teljes Docker build host-eszköz hiányában CI-ben ellenőrizendő |
 | M1 | completed | 2 migráció, fixture, schema sync, 6 teszt, login és két publikus tenant sikeres | Helyi PostgreSQL 16-on ellenőrizve |
-| M2 | in_progress | | Struktúra és tartalomkezelés |
+| M2 | completed | Séma-validáció, 10 teszt, admin HTTP smoke teszt és production build sikeres | Teljes struktúra-, tartalom- és médiaadminisztráció |
 | M3 | pending | | Workflow, verziók és audit |
 | M4 | pending | | Publikus reszponzív felület |
 | M5 | pending | | Kereső, sablonok és visszajelzés |
@@ -62,20 +60,21 @@
   szerveroldali JPEG/PNG/WebP/PDF MIME-engedélylistával; tenantonkénti tárolás.
 - Egységes, reszponzív admin UI: asztali oldalsáv, mobilmenü, intézményi
   kontextussáv, irányítópult-kártyák, rendezett űrlapok/listák és flash üzenetek.
+- Teljes M2 admin CRUD telephelyhez, épülethez, szinthez, helyiséghez,
+  osztályhoz, szolgáltatáshoz, kapcsolati ponthoz, tájékoztatóhoz, vizsgálati
+  útmutatóhoz, betegúthoz és közleményhez.
+- Betegút-lépések rendezett létrehozása, szerkesztése és törlése, valamint a
+  vizsgálati felkészülés részletes, strukturált mezőinek kezelése.
+- Tenantvédett média-megnyitás és CSRF-védett fájltörlés.
 
 ## Nyitott feladatok
 
-- Az összes M2–M6 funkció a specifikáció szerinti sorrendben.
-- M2-ben még hátra van az épület/szint/helyiség/kapcsolati pont, betegút és
-  ProcedureGuide részletes CRUD-ja, valamint a média törlési/kiszolgálási útja.
+- Az összes M3–M6 funkció a specifikáció szerinti sorrendben.
 - Tailwind CSS integráció és vizuális rendszer.
-- Fixture csomag és két demo intézmény.
 - CI workflow véglegesítése a migrációs és funkcionális tesztekkel.
 
 ## Ismert hibák és technikai adósság
 
-- Az M0 commit (`289b585`) pushát a GitHub visszautasította, mert a jelenlegi
-  OAuth token nem rendelkezik `workflow` scope-pal az új CI workflow feltöltéséhez.
 - A platformadmin tenantváltás teljes auditnaplózása az M3 AuditLog moduljával
   készül el; az M1-ben a jogosultság, CSRF és session-alapú váltás működik.
 - A development konténer induláskor `composer install`-t futtat; később külön
