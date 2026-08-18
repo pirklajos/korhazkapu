@@ -48,6 +48,7 @@ final class AdminCrudController extends AbstractController
         $this->denyUnlessEditor($roles); $institution=$context->requireInstitution();
         $first=fn(string $class)=>$em->getRepository($class)->findOneBy(['institution'=>$institution])??throw $this->createNotFoundException('Előbb hozd létre a szükséges szülőelemet.');
         $entity=match($type){'site'=>new Site($institution,'','',''),'building'=>new Building($institution,$first(Site::class),''),'floor'=>new Floor($institution,$first(Building::class),''),'room'=>new Room($institution,$first(Floor::class),''),'department'=>new Department($institution,'',''),'service'=>new Service($institution,'',''),'contact'=>new ContactPoint($institution,'','phone',''),'page'=>new InformationPage($institution,'',''),'guide'=>new ProcedureGuide($institution,'',''),'journey'=>new PatientJourney($institution,'',''),'announcement'=>new Announcement($institution,'',''),default=>throw $this->createNotFoundException()};
+        $this->prefillParent($type,$entity,$request,$context,$em);
         return $this->handle($type,$entity,$request,$em,$workflow,true,true);
     }
 
@@ -73,7 +74,33 @@ final class AdminCrudController extends AbstractController
         $form=$this->form($type,$entity);$form->handleRequest($request);if($form->isSubmitted()&&$entity instanceof Service){$site=$entity->getSite();$building=$entity->getBuilding();$floor=$entity->getFloor();$room=$entity->getRoom();if($building&&(!$site||!$building->getSite()->getId()->equals($site->getId())))$form->get('building')->addError(new FormError('A kiválasztott épület nem ehhez a telephelyhez tartozik.'));if($floor&&(!$building||!$floor->getBuilding()->getId()->equals($building->getId())))$form->get('floor')->addError(new FormError('A kiválasztott szint nem ehhez az épülethez tartozik.'));if($room&&(!$floor||!$room->getFloor()->getId()->equals($floor->getId())))$form->get('room')->addError(new FormError('A kiválasztott helyiség nem ehhez a szinthez tartozik.'));}
         if($form->isSubmitted()&&$form->isValid()){if($entity instanceof ProcedureGuide){$lines=static fn(?string $v):array=>array_values(array_filter(array_map('trim',preg_split('/\R/',(string)$v)?:[])));$entity->setPreparation(['fasting'=>$form->get('fasting')->getData(),'hydration'=>(string)$form->get('hydration')->getData(),'medicationWarning'=>(string)$form->get('medicationWarning')->getData(),'steps'=>$lines($form->get('preparationText')->getData())])->setRequiredDocuments($lines($form->get('requiredDocumentsText')->getData()))->setAftercare(['steps'=>$lines($form->get('aftercareText')->getData()),'result'=>(string)$form->get('resultInformation')->getData(),'help'=>(string)$form->get('whenToSeekHelp')->getData()]);}$em->persist($entity);$em->flush();$this->addFlash('success',$new?'Az elem létrejött.':'A módosítások mentve.');return $this->redirectToRoute('tenant_admin_manage',['institutionSlug'=>$entity->getInstitution()->getSlug(),'type'=>$type]);}
         $user=$this->getUser();$revisions=$entity instanceof AbstractContent&&!$new?$em->getRepository(ContentRevision::class)->findBy(['contentType'=>$entity::class,'contentId'=>(string)$entity->getId()],['versionNumber'=>'DESC']):[];
-        return $this->render('admin/content/form.html.twig',['form'=>$form,'type'=>$type,'isNew'=>$new,'entity'=>$entity,'institution'=>$entity->getInstitution(),'workflowTransitions'=>$entity instanceof AbstractContent&&$user instanceof User?$workflow->allowedTransitions($entity,$user):[],'revisions'=>$revisions,'canEditContent'=>$canEdit]);
+        return $this->render('admin/content/form.html.twig',['form'=>$form,'type'=>$type,'isNew'=>$new,'entity'=>$entity,'institution'=>$entity->getInstitution(),'workflowTransitions'=>$entity instanceof AbstractContent&&$user instanceof User?$workflow->allowedTransitions($entity,$user):[],'revisions'=>$revisions,'canEditContent'=>$canEdit,'relatedSections'=>$new?[]:$this->relatedSections($type,$entity,$em)]);
+    }
+
+    private function prefillParent(string $type,TenantOwnedEntity $entity,Request $request,TenantContext $context,EntityManagerInterface $em):void
+    {
+        $parentType=$request->query->getString('parentType');$parentId=$request->query->getString('parent');if(!$parentType||!$parentId)return;$class=self::TYPES[$parentType]??null;if(!$class)return;$parent=$em->getRepository($class)->find($parentId);if(!$parent instanceof TenantOwnedEntity)return;$this->assertCurrentTenant($parent,$context);
+        if($type==='building'&&$parent instanceof Site&&$entity instanceof Building)$entity->setSite($parent);
+        elseif($type==='floor'&&$parent instanceof Building&&$entity instanceof Floor)$entity->setBuilding($parent);
+        elseif($type==='room'&&$parent instanceof Floor&&$entity instanceof Room)$entity->setFloor($parent);
+        elseif($type==='service'&&$entity instanceof Service){if($parent instanceof Department)$entity->setDepartment($parent);elseif($parent instanceof Room)$entity->setRoom($parent)->setFloor($parent->getFloor())->setBuilding($parent->getFloor()->getBuilding())->setSite($parent->getFloor()->getBuilding()->getSite());}
+        elseif($type==='contact'&&$entity instanceof ContactPoint){if($parent instanceof Department)$entity->setDepartment($parent);elseif($parent instanceof Service)$entity->setService($parent);}
+        elseif($type==='guide'&&$parent instanceof Service&&$entity instanceof ProcedureGuide)$entity->setService($parent);
+    }
+
+    private function relatedSections(string $type,TenantOwnedEntity $entity,EntityManagerInterface $em):array
+    {
+        $definitions=match($type){
+            'site'=>[['type'=>'building','label'=>'Épületek','class'=>Building::class,'field'=>'site','title'=>'name','order'=>'name']],
+            'building'=>[['type'=>'floor','label'=>'Emeletek és szintek','class'=>Floor::class,'field'=>'building','title'=>'name','order'=>'levelNumber']],
+            'floor'=>[['type'=>'room','label'=>'Szobák és helyiségek','class'=>Room::class,'field'=>'floor','title'=>'name','order'=>'number']],
+            'room'=>[['type'=>'service','label'=>'Itt elérhető ellátások','class'=>Service::class,'field'=>'room','title'=>'name','order'=>'name']],
+            'department'=>[['type'=>'service','label'=>'Az osztály ellátásai','class'=>Service::class,'field'=>'department','title'=>'name','order'=>'name'],['type'=>'contact','label'=>'Kapcsolati pontok','class'=>ContactPoint::class,'field'=>'department','title'=>'label','order'=>'label']],
+            'service'=>[['type'=>'guide','label'=>'Vizsgálati útmutatók','class'=>ProcedureGuide::class,'field'=>'service','title'=>'title','order'=>'title'],['type'=>'contact','label'=>'Kapcsolati pontok','class'=>ContactPoint::class,'field'=>'service','title'=>'label','order'=>'label']],
+            default=>[],
+        };
+        $sections=[];foreach($definitions as $definition){$children=$em->getRepository($definition['class'])->findBy([$definition['field']=>$entity],[$definition['order']=>'ASC']);$items=[];foreach($children as $child){$meta=match($definition['type']){'floor'=>$child->getLevelNumber()!==null?'Szint: '.$child->getLevelNumber():null,'room'=>$child->getNumber(),'contact'=>$child->getValue(),'service'=>implode(' · ',array_filter([$child->getFloor()?->getName(),$child->getRoom()?->getNumber()])),default=>null};$getter='get'.ucfirst($definition['title']);$items[]=['id'=>$child->getId(),'title'=>$child->{$getter}(),'meta'=>$meta];}$sections[]=['type'=>$definition['type'],'label'=>$definition['label'],'items'=>$items];}
+        return $sections;
     }
 
     private function form(string $type,TenantOwnedEntity $entity):FormInterface
