@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+{% block title %}{% block admin_title %}Admin{% endblock %} – KórházKapu{% endblock %}
+{% block body %}
+{% set adminInstitution = currentInstitution is defined ? currentInstitution : (institution is defined ? institution : null) %}
+<div class="admin-shell" data-controller="admin-menu">
+    <header class="admin-mobile-header">
+        <a class="admin-brand" href="{{ path('admin_dashboard') }}"><span class="admin-brand-mark" aria-hidden="true">K</span><span>KórházKapu</span></a>
+        <button class="admin-menu-button" type="button" aria-expanded="false" aria-controls="admin-sidebar" data-admin-menu-target="button" data-action="admin-menu#toggle">Menü</button>
+    </header>
+    <aside class="admin-sidebar" id="admin-sidebar" data-admin-menu-target="sidebar">
+        <a class="admin-brand" href="{{ path('admin_dashboard') }}"><span class="admin-brand-mark" aria-hidden="true">K</span><span><strong>KórházKapu</strong><small>Adminisztráció</small></span></a>
+        <nav aria-label="Admin navigáció">
+            <a href="{{ path('admin_dashboard') }}" class="{{ app.request.attributes.get('_route') in ['admin_dashboard','tenant_admin_dashboard'] ? 'is-active' : '' }}"><span aria-hidden="true">⌂</span>Irányítópult</a>
+            {% if adminInstitution %}
+                {% set activeType = app.request.attributes.get('type') %}
+                {% set structureTypes = {site:'Telephelyek',building:'Épületek',floor:'Szintek',room:'Helyiségek',department:'Osztályok',service:'Ellátások',contact:'Kapcsolati pontok'} %}
+                {% set contentTypes = {page:'Tájékoztatók',guide:'Vizsgálati útmutatók',journey:'Betegutak',announcement:'Közlemények'} %}
+                <details class="admin-nav-group" {{ app.request.attributes.get('_route') == 'tenant_admin_structure' or activeType in structureTypes|keys ? 'open' : '' }}><summary><span aria-hidden="true">◇</span><span>Struktúra</span><b aria-hidden="true">⌄</b></summary><div><a href="{{ path('tenant_admin_structure',{institutionSlug:adminInstitution.slug}) }}" class="{{ app.request.attributes.get('_route') == 'tenant_admin_structure' ? 'is-active' : '' }}">Áttekintés</a>{% for type,label in structureTypes %}<a href="{{ path('tenant_admin_manage',{institutionSlug:adminInstitution.slug,type:type}) }}" class="{{ activeType == type ? 'is-active' : '' }}">{{ label }}</a>{% endfor %}</div></details>
+                <details class="admin-nav-group" {{ app.request.attributes.get('_route') in ['tenant_admin_content','admin_content'] or activeType in contentTypes|keys ? 'open' : '' }}><summary><span aria-hidden="true">▤</span><span>Tartalom</span><b aria-hidden="true">⌄</b></summary><div><a href="{{ path('tenant_admin_content',{institutionSlug:adminInstitution.slug}) }}" class="{{ app.request.attributes.get('_route') in ['tenant_admin_content','admin_content'] ? 'is-active' : '' }}">Áttekintés</a>{% for type,label in contentTypes %}<a href="{{ path('tenant_admin_manage',{institutionSlug:adminInstitution.slug,type:type}) }}" class="{{ activeType == type ? 'is-active' : '' }}">{{ label }}</a>{% endfor %}</div></details>
+                <a href="{{ path('tenant_admin_media',{institutionSlug:adminInstitution.slug}) }}" class="{{ app.request.attributes.get('_route') == 'tenant_admin_media' ? 'is-active' : '' }}"><span aria-hidden="true">▧</span>Médiafájlok</a>
+                <a href="{{ path('tenant_admin_audit',{institutionSlug:adminInstitution.slug}) }}" class="{{ app.request.attributes.get('_route') == 'tenant_admin_audit' ? 'is-active' : '' }}"><span aria-hidden="true">◷</span>Auditnapló</a>
+                <a href="{{ path('tenant_admin_search_feedback',{institutionSlug:adminInstitution.slug}) }}" class="{{ 'search_feedback' in app.request.attributes.get('_route') ? 'is-active' : '' }}"><span aria-hidden="true">⌕</span>Keresés és visszajelzés</a>
+                <a href="{{ path('tenant_admin_templates',{institutionSlug:adminInstitution.slug}) }}" class="{{ app.request.attributes.get('_route') == 'tenant_admin_templates' ? 'is-active' : '' }}"><span aria-hidden="true">▣</span>Központi sablonok</a>
+                <a href="{{ path('tenant_home',{institutionSlug:adminInstitution.slug}) }}"><span aria-hidden="true">↗</span>Publikus oldal</a>
+            {% endif %}
+        </nav>
+        <div class="admin-sidebar-footer"><span class="admin-user-avatar" aria-hidden="true">{{ app.user.displayName|default('A')|slice(0,1)|upper }}</span><span><strong>{{ app.user.displayName|default('Admin') }}</strong><small>{{ app.user.userIdentifier|default('') }}</small></span><a href="{{ path('app_logout') }}" aria-label="Kijelentkezés">↪</a></div>
+    </aside>
+    <div class="admin-workspace">
+        <header class="admin-topbar">
+            <div>{% if adminInstitution %}<span class="admin-eyebrow">Aktív intézmény</span><strong>{{ adminInstitution.shortName }}</strong>{% else %}<strong>Platformkezelés</strong>{% endif %}</div>
+            <span class="status-pill status-success"><span aria-hidden="true">●</span> Rendszer elérhető</span>
+        </header>
+        <div class="admin-page">
+            {% for type,messages in app.flashes %}{% for message in messages %}<div class="admin-flash admin-flash-{{ type }}" role="status">{{ message }}</div>{% endfor %}{% endfor %}
+            {% block admin_body %}{% endblock %}
+        </div>
+    </div>
+</div>
+{% endblock %}

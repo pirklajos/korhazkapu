@@ -1,0 +1,23 @@
+{% extends 'admin/base.html.twig' %}
+{% block admin_title %}Irányítópult{% endblock %}
+{% block admin_body %}
+<main id="main-content">
+    <div class="admin-page-heading"><div><span class="admin-eyebrow">Áttekintés</span><h1>Jó napot, {{ app.user.displayName|split(' ')|first }}!</h1><p>Itt láthatod az intézményi tér legfontosabb beállításait és feladatait.</p></div></div>
+    {% if currentInstitution %}<section class="admin-hero-card"><div><span class="admin-eyebrow">Aktív intézményi tér</span><h2>{{ currentInstitution.name }}</h2><p>{{ currentInstitution.centralAddress }}</p></div><a class="button button-secondary" href="{{ path('tenant_home',{institutionSlug:currentInstitution.slug}) }}">Publikus oldal megnyitása ↗</a></section>{% endif %}
+    {% if currentInstitution %}<section class="admin-section"><div class="admin-section-heading"><div><span class="admin-eyebrow">Szerkesztői feladatok</span><h2>Tartalmi áttekintés</h2></div><a href="{{ path('tenant_admin_content',{institutionSlug:currentInstitution.slug}) }}">Tartalmak megnyitása →</a></div><div class="workflow-stat-grid"><article><span class="workflow-stat-icon">✎</span><div><strong>{{ workflowStats.draft }}</strong><small>Piszkozat</small></div></article><article><span class="workflow-stat-icon">⌛</span><div><strong>{{ workflowStats.review }}</strong><small>Ellenőrzésre vár</small></div></article><article><span class="workflow-stat-icon">✓</span><div><strong>{{ workflowStats.published }}</strong><small>Publikált</small></div></article><article class="{{ workflowStats.due ? 'is-warning' : '' }}"><span class="workflow-stat-icon">!</span><div><strong>{{ workflowStats.due }}</strong><small>30 napon belül felülvizsgálandó</small></div></article></div></section>{% endif %}
+    {% if isPlatformAdmin %}
+        <section class="admin-section" aria-labelledby="tenant-switch-title">
+            <div class="admin-section-heading"><div><span class="admin-eyebrow">Platformadmin</span><h2 id="tenant-switch-title">Intézményváltó</h2></div><p>Válaszd ki, melyik intézmény adatait szeretnéd kezelni.</p></div>
+            <div class="tenant-card-grid">
+                {% for institution in institutions %}
+                    <form class="tenant-card {{ currentInstitution and currentInstitution.id == institution.id ? 'is-current' : '' }}" method="post" action="{{ path('admin_tenant_select', {slug: institution.slug}) }}">
+                        <input type="hidden" name="_token" value="{{ csrf_token('select_tenant_' ~ institution.slug) }}">
+                        <span class="tenant-monogram" aria-hidden="true">{{ institution.shortName|slice(0,2)|upper }}</span><span><strong>{{ institution.name }}</strong><small>{{ institution.centralAddress }}</small></span><button class="button button-quiet" type="submit">{{ currentInstitution and currentInstitution.id == institution.id ? 'Aktív' : 'Kiválasztás' }}</button>
+                    </form>
+                {% else %}<p>Nincs aktív intézmény.</p>{% endfor %}
+            </div>
+        </section>
+    {% endif %}
+    {% if currentInstitution %}<div class="admin-action-grid"><a href="{{ path('tenant_admin_content',{institutionSlug:currentInstitution.slug}) }}"><span class="action-icon">▤</span><strong>Struktúra és tartalom</strong><small>Telephelyek, szolgáltatások és tájékoztatók</small><span>Megnyitás →</span></a><a href="{{ path('tenant_admin_media',{institutionSlug:currentInstitution.slug}) }}"><span class="action-icon">▧</span><strong>Médiatár</strong><small>Képek és dokumentumok kezelése</small><span>Megnyitás →</span></a><a href="{{ path('tenant_admin_audit',{institutionSlug:currentInstitution.slug}) }}"><span class="action-icon">◷</span><strong>Auditnapló</strong><small>Állapotváltások és visszaállítások</small><span>Megnyitás →</span></a></div>{% if recentAudit|length %}<section class="admin-list-card admin-section"><div class="admin-section-heading"><h2>Legutóbbi szerkesztői események</h2><a href="{{ path('tenant_admin_audit',{institutionSlug:currentInstitution.slug}) }}">Összes esemény →</a></div><ol class="audit-list compact">{% for event in recentAudit %}<li><span class="audit-icon">↗</span><div><strong>{{ event.action == 'content_revision_restored' ? 'Verzió visszaállítva' : 'Állapot megváltoztatva' }}</strong><small>{{ event.createdAt|date('Y. m. d. H:i') }}{% if event.actor %} · {{ event.actor.displayName }}{% endif %}</small></div></li>{% endfor %}</ol></section>{% endif %}{% endif %}
+</main>
+{% endblock %}

@@ -1,0 +1,42 @@
+
+services:
+  app:
+    build:
+      context: .
+      target: development
+    environment:
+      APP_ENV: dev
+      APP_SECRET: ${APP_SECRET:-local-development-secret-change-me}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-korhazkapu}:${POSTGRES_PASSWORD:-korhazkapu}@database:5432/${POSTGRES_DB:-korhazkapu}?serverVersion=16&charset=utf8
+    ports:
+      - "${APP_PORT:-8000}:8000"
+    volumes:
+      - .:/app
+      - vendor_data:/app/vendor
+    depends_on:
+      database:
+        condition: service_healthy
+
+###> doctrine/doctrine-bundle ###
+  database:
+    image: postgres:${POSTGRES_VERSION:-16}-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-korhazkapu}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-korhazkapu}
+      POSTGRES_USER: ${POSTGRES_USER:-korhazkapu}
+    healthcheck:
+      test: ["CMD", "pg_isready", "-d", "${POSTGRES_DB:-app}", "-U", "${POSTGRES_USER:-app}"]
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+    volumes:
+      - database_data:/var/lib/postgresql/data:rw
+      # You may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
+      # - ./docker/db/data:/var/lib/postgresql/data:rw
+###< doctrine/doctrine-bundle ###
+
+volumes:
+  vendor_data:
+###> doctrine/doctrine-bundle ###
+  database_data:
+###< doctrine/doctrine-bundle ###

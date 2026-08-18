@@ -1,0 +1,20 @@
+{% extends 'admin/base.html.twig' %}
+{% set isStructure = group == 'structure' %}
+{% block admin_title %}{{ isStructure ? 'Struktúra' : 'Tartalom' }}{% endblock %}
+{% block admin_body %}
+<main id="main-content">
+    <div class="admin-page-heading admin-page-heading-rich">
+        <div><span class="admin-eyebrow">{{ institution.shortName }}</span><h1>{{ isStructure ? 'Intézményi struktúra' : 'Tartalomkezelés' }}</h1><p>{{ isStructure ? 'Telephelyek, épületek, helyiségek és betegellátási pontok rendezett kezelése.' : 'Betegtájékoztatók, útmutatók, betegutak és közlemények szerkesztése.' }}</p></div>
+        <div class="heading-actions"><a class="button button-secondary" href="{{ path(isStructure ? 'tenant_admin_content' : 'tenant_admin_structure',{institutionSlug:institution.slug}) }}">{{ isStructure ? 'Tartalmak' : 'Struktúra' }}</a><a class="button button-quiet" href="{{ path('tenant_admin_media',{institutionSlug:institution.slug}) }}">Médiatár</a></div>
+    </div>
+    <div class="admin-overview-grid">
+        {% for card in cards %}
+        <section class="admin-entity-card" id="{{ card.type }}">
+            <header><div><span class="entity-card-icon" aria-hidden="true">{{ loop.index < 10 ? '0' ~ loop.index : loop.index }}</span><div><h2>{{ card.label }}</h2><small>{{ card.count }} elem</small></div></div><a class="entity-add" href="{{ path('tenant_admin_crud_new',{institutionSlug:institution.slug,type:card.type}) }}">+ Új</a></header>
+            <ul>{% for item in card.items %}<li><a href="{{ path('tenant_admin_crud_edit',{institutionSlug:institution.slug,type:card.type,id:item.id}) }}"><span><strong>{{ item.title }}</strong>{% if item.meta %}<small>{{ item.meta }}</small>{% endif %}</span><b aria-hidden="true">›</b></a></li>{% else %}<li class="entity-empty">Még nincs rögzített elem.</li>{% endfor %}</ul>
+            <footer><a href="{{ path('tenant_admin_manage',{institutionSlug:institution.slug,type:card.type}) }}">Összes {{ card.label|lower }} kezelése <span>→</span></a></footer>
+        </section>
+        {% endfor %}
+    </div>
+</main>
+{% endblock %}

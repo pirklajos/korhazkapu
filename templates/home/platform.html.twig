@@ -1,0 +1,3 @@
+{% extends 'base.html.twig' %}
+{% block title %}KórházKapu{% endblock %}
+{% block body %}<main id="main-content"><h1>KórházKapu</h1><p>Válasszon intézményi címet.</p>{% if app.user %}<p><a href="{{ path('admin_dashboard') }}">Admin irányítópult</a></p>{% else %}<p><a href="{{ path('app_login') }}">Adminisztrátori bejelentkezés</a></p>{% endif %}</main>{% endblock %}

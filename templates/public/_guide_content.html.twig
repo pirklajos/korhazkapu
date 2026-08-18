@@ -1,0 +1,13 @@
+<div class="embedded-guide">
+    <div class="embedded-guide-heading"><span class="public-kicker">Vizsgálat előtti tudnivalók</span><h2>{{ guide.title }}</h2>{% if guide.summary %}<p>{{ guide.summary }}</p>{% endif %}</div>
+    <div class="guide-facts">{% if guide.durationMinutes %}<div><small>Várható időtartam</small><strong>{{ guide.durationMinutes }} perc</strong></div>{% endif %}<div><small>Beutaló</small><strong>{{ guide.referralRequired ? 'Szükséges' : 'Nem szükséges' }}</strong></div><div><small>Előjegyzés</small><strong>{{ guide.appointmentRequired ? 'Szükséges' : 'Nem szükséges' }}</strong></div><div><small>Kísérő</small><strong>{{ guide.companionRequired ? 'Szükséges' : 'Nem szükséges' }}</strong></div>{% if guide.preparation.fasting is defined %}<div><small>Éhgyomor</small><strong>{{ guide.preparation.fasting ? 'Szükséges' : 'Nem szükséges' }}</strong></div>{% endif %}</div>
+    {% if guide.purpose %}<section><h3>A vizsgálat célja</h3><p>{{ guide.purpose }}</p></section>{% endif %}
+    {% if guide.discomfort %}<section><h3>Mire számíthat?</h3><p>{{ guide.discomfort }}</p></section>{% endif %}
+    {% if guide.preparation.hydration|default('') %}<section class="guide-notice"><h3>Folyadékfogyasztás</h3><p>{{ guide.preparation.hydration }}</p></section>{% endif %}
+    {% if guide.preparation.medicationWarning|default('') %}<section class="guide-notice"><h3>Gyógyszerek</h3><p>{{ guide.preparation.medicationWarning }}</p></section>{% endif %}
+    {% if guide.preparation.steps is defined and guide.preparation.steps|length %}<section><h3>Felkészülés lépésről lépésre</h3><ol class="guide-steps">{% for step in guide.preparation.steps %}<li><span>{{ loop.index }}</span>{{ step }}</li>{% endfor %}</ol></section>{% endif %}
+    {% if guide.requiredDocuments|length %}<section><h3>Ezeket hozza magával</h3><ul class="guide-checklist">{% for document in guide.requiredDocuments %}<li>{{ document }}</li>{% endfor %}</ul></section>{% endif %}
+    {% if guide.aftercare.steps is defined and guide.aftercare.steps|length %}<section><h3>Vizsgálat utáni teendők</h3><ul class="guide-checklist">{% for step in guide.aftercare.steps %}<li>{{ step }}</li>{% endfor %}</ul></section>{% endif %}
+    {% if guide.aftercare.result|default('') %}<section><h3>Az eredmény átvétele</h3><p>{{ guide.aftercare.result }}</p></section>{% endif %}
+    {% if guide.aftercare.help|default('') %}<section class="guide-warning"><h3>Mikor kérjen segítséget?</h3><p>{{ guide.aftercare.help }}</p></section>{% endif %}
+</div>

@@ -1,1 +1,65 @@
-# korhazkapu
+# KórházKapu
+
+White-label, többintézményes betegtájékoztató webalkalmazás. A projekt jelenleg az
+alapozási mérföldkőnél tart; a részletes készültség a
+[`docs/IMPLEMENTATION_STATUS.md`](docs/IMPLEMENTATION_STATUS.md) fájlban követhető.
+
+## Gyorsindítás Dockerrel
+
+Követelmény: Docker Engine és Docker Compose v2.
+
+```bash
+cp .env.example .env.local
+docker compose up --build -d
+docker compose exec app php bin/console doctrine:migrations:migrate --no-interaction
+```
+
+Az alkalmazás alapértelmezetten a <http://localhost:8000> címen érhető el. A két
+M1 demo intézmény fejlesztői útvonalai:
+
+- `http://localhost:8000/i/demo-epc-hk`
+- `http://localhost:8000/i/demo-duna`
+
+A nem-production fixture felhasználók közös jelszava
+`Demo-Only-ChangeMe-2026!`. A platformadmin e-mail-címe
+`platform.admin@demo.invalid`; az intézményi szerepkörök címei és használata az
+[admin útmutatóban](docs/ADMIN_GUIDE.md) található.
+
+## Fejlesztői parancsok
+
+```bash
+docker compose exec app composer install
+docker compose exec app composer lint
+docker compose exec app composer test
+docker compose exec app composer build
+docker compose exec app composer check
+```
+
+Adatbázis-migráció és a későbbi demo fixture-ek betöltése:
+
+```bash
+docker compose exec app php bin/console doctrine:migrations:migrate --no-interaction
+docker compose exec app php bin/console doctrine:fixtures:load --no-interaction
+```
+
+A feldolgozott ÉPC-HK alaprajzok alapján a K épület négy szintjének helyiségei
+és ellátásai újrafuttatható paranccsal tölthetők be. A már létező rekordokat
+frissíti, nem duplikálja:
+
+```bash
+docker compose exec app php bin/console app:import:k-building demo-epc-hk
+```
+
+Az AssetMapper production buildje a `composer build` része. A Tailwind CSS
+integráció az M1/M4 során kerül be a végleges assetfolyamatba.
+
+## Dokumentáció
+
+- [Architektúra](docs/ARCHITECTURE.md)
+- [Telepítés](docs/DEPLOYMENT.md)
+- [Biztonsági alapok](docs/SECURITY.md)
+- [Megvalósítási állapot](docs/IMPLEMENTATION_STATUS.md)
+- [Admin útmutató](docs/ADMIN_GUIDE.md)
+
+A részletes végrehajtási specifikáció a
+[`KORHAZKAPU_CODEX_BUILD.md`](KORHAZKAPU_CODEX_BUILD.md) fájlban található.

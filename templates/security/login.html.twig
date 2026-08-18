@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+{% block title %}Bejelentkezés – KórházKapu{% endblock %}
+{% block body %}
+<main id="main-content" class="auth-shell">
+    <form method="post" class="auth-card">
+        <h1>Adminisztrátori bejelentkezés</h1>
+        {% if error %}<div class="alert alert-danger" role="alert">A megadott e-mail-cím vagy jelszó hibás.</div>{% endif %}
+        <label for="username">E-mail-cím</label>
+        <input id="username" name="_username" type="email" value="{{ last_username }}" autocomplete="email" required autofocus>
+        <label for="password">Jelszó</label>
+        <input id="password" name="_password" type="password" autocomplete="current-password" required>
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+        <button type="submit">Bejelentkezés</button>
+    </form>
+</main>
+{% endblock %}

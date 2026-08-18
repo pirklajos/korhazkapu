@@ -1,0 +1,8 @@
+{% extends 'admin/base.html.twig' %}
+{% block admin_title %}Médiafájlok{% endblock %}
+{% block admin_body %}
+<main id="main-content"><div class="admin-page-heading"><div><span class="admin-eyebrow">{{ institution.shortName }}</span><h1>Médiafájlok</h1><p>Képek és dokumentumok biztonságos, intézményi tárhelye.</p></div></div><div class="admin-two-column">
+<section class="admin-form-card"><h2>Új fájl feltöltése</h2><p class="field-help">JPEG, PNG, WebP vagy PDF, legfeljebb 5 MB. Az alt szöveg kötelező.</p>{{ form_start(form) }}{{ form_errors(form) }}{{ form_widget(form) }}<button class="button" type="submit">Feltöltés</button>{{ form_end(form) }}</section>
+<section class="admin-list-card"><div class="admin-section-heading"><h2>Feltöltött fájlok</h2><span class="count-badge">{{ assets|length }}</span></div><ul class="media-list">{% for asset in assets %}<li><span class="media-file-icon">{{ asset.mimeType == 'application/pdf' ? 'PDF' : 'IMG' }}</span><span><strong>{{ asset.originalName }}</strong><small>{{ asset.altText }} · {{ (asset.sizeBytes / 1024)|round }} KB</small></span><span class="media-actions"><a href="{{ path('tenant_admin_media_view',{institutionSlug:institution.slug,id:asset.id}) }}" target="_blank">Megnyitás</a><form method="post" action="{{ path('tenant_admin_media_delete',{institutionSlug:institution.slug,id:asset.id}) }}" onsubmit="return confirm('Biztosan törlöd ezt a fájlt?')"><input type="hidden" name="_token" value="{{ csrf_token('delete_media_' ~ asset.id) }}"><button type="submit" class="media-delete">Törlés</button></form></span></li>{% else %}<li class="empty-state">Még nincs feltöltött fájl.</li>{% endfor %}</ul></section>
+</div></main>
+{% endblock %}

@@ -1,0 +1,7 @@
+framework:
+    rate_limiter:
+        feedback:
+            policy: fixed_window
+            limit: 10
+            interval: '15 minutes'
+

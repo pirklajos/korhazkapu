@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: korhazkapu_test
+          POSTGRES_USER: korhazkapu
+          POSTGRES_PASSWORD: korhazkapu
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U korhazkapu -d korhazkapu_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      APP_ENV: test
+      APP_SECRET: ci-only-secret
+      DATABASE_URL: postgresql://korhazkapu:korhazkapu@127.0.0.1:5432/korhazkapu_test?serverVersion=16&charset=utf8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: ctype, dom, iconv, intl, pdo_pgsql
+          coverage: none
+      - uses: ramsey/composer-install@v3
+      - run: composer check

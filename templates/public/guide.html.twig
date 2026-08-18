@@ -1,0 +1,6 @@
+{% extends 'public/base.html.twig' %}
+{% block public_title %}{{ guide.title }} – {{ institution.shortName }}{% endblock %}
+{% block public_body %}
+<section class="public-subhero"><div class="public-container"><nav class="content-breadcrumb"><a href="{{ path('tenant_home',{institutionSlug:institution.slug}) }}">Főoldal</a><span>›</span>{% if guide.service %}<a href="{{ path('tenant_service_show',{institutionSlug:institution.slug,slug:guide.service.slug}) }}">{{ guide.service.name }}</a><span>›</span>{% endif %}<span>{{ guide.title }}</span></nav><span class="public-kicker">Vizsgálati felkészülés</span><h1>{{ guide.title }}</h1><p>{{ guide.summary }}</p></div></section>
+<section class="public-section public-container standalone-guide">{% include 'public/_guide_content.html.twig' with {guide:guide} only %}{% if guide.service %}<a class="button" href="{{ path('tenant_service_show',{institutionSlug:institution.slug,slug:guide.service.slug}) }}">Vissza az ellátáshoz</a>{% endif %}</section>
+{% endblock %}
