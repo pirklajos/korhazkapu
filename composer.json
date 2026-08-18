@@ -96,7 +96,7 @@
             "@php bin/console lint:twig templates"
         ],
         "test": [
-            "@php vendor/bin/simple-phpunit"
+            "@php vendor/bin/simple-phpunit -c phpunit.dist.xml"
         ],
         "build": [
             "@php bin/console cache:clear --env=prod",

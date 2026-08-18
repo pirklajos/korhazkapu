@@ -8,6 +8,7 @@ use App\Entity\Institution;
 use App\Entity\User;
 use App\Tenant\TenantContext;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+use Symfony\Component\Security\Core\Authorization\Voter\Vote;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 final class InstitutionVoter extends Voter
@@ -17,7 +18,7 @@ final class InstitutionVoter extends Voter
 
     public function __construct(private readonly TenantContext $context, private readonly TenantRoleChecker $roles) {}
     protected function supports(string $attribute, mixed $subject): bool { return in_array($attribute, [self::VIEW, self::EDIT], true) && $subject instanceof Institution; }
-    protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool
+    protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token, ?Vote $vote = null): bool
     {
         $user = $token->getUser();
         if (!$user instanceof User) return false;

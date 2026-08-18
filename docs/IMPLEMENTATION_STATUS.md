@@ -3,9 +3,9 @@
 ## Aktuális állapot
 
 - Utolsó frissítés: 2026-08-18
-- Aktuális mérföldkő: M1 – implementálva, futtatási ellenőrzésre vár
-- Következő konkrét lépés: PostgreSQL migráció, fixture és funkcionális tesztek
-  futtatása Docker-képes környezetben; siker esetén M2 megkezdése.
+- Aktuális mérföldkő: M1 – elkészült; M2 következik
+- Következő konkrét lépés: telephely-, épület-, helyiség-, osztály- és
+  szolgáltatásmodell kialakítása az M2-ben.
 - Ismert blokkoló tényező: a jelenlegi hoston nincs Docker/Compose, Composer,
   illetve PHP DOM/XML bővítmény; a teljes konténeres build helyben itt nem
   futtatható. A repository Docker image-e ezeket biztosítja.
@@ -15,7 +15,7 @@
 | Mérföldkő | Állapot | Ellenőrzés | Megjegyzés |
 |---|---|---|---|
 | M0 | completed | Composer-validáció, lint, PHP syntax és YAML ellenőrzés sikeres | A teljes Docker build host-eszköz hiányában CI-ben ellenőrizendő |
-| M1 | in_progress | PHP/YAML/Twig/container lint, Doctrine mapping és tenantizoláció sikeres | PostgreSQL migráció és fixture Docker nélküli hoston nem ellenőrizhető |
+| M1 | completed | 2 migráció, fixture, schema sync, 6 teszt, login és két publikus tenant sikeres | Helyi PostgreSQL 16-on ellenőrizve |
 | M2 | pending | | Struktúra és tartalomkezelés |
 | M3 | pending | | Workflow, verziók és audit |
 | M4 | pending | | Publikus reszponzív felület |
@@ -88,5 +88,9 @@
 - 2026-08-18: Doctrine entitásmapping `--skip-sync` ellenőrzése – sikeres.
 - 2026-08-18: hét M1 útvonal felismerése – sikeres.
 - 2026-08-18: tenant szerepkör-izoláció közvetlen domainellenőrzése – sikeres.
-- 2026-08-18: PHPUnit és üres PostgreSQL migráció továbbra sem futtatható a
-  host hiányzó DOM és `pdo_pgsql` bővítménye, illetve Docker hiánya miatt.
+- 2026-08-18: PHP DOM/XML és `pdo_pgsql` telepítése után két migráció üres helyi
+  PostgreSQL-adatbázison sikeres; fixture betöltve, schema mapping szinkronban.
+- 2026-08-18: PHPUnit – 6 teszt, 7 assertion, sikeres.
+- 2026-08-18: `composer lint` és production `composer build` – sikeres.
+- 2026-08-18: platformoldal, login GET, két tenantoldal és platformadmin login +
+  admin dashboard HTTP-ellenőrzése – sikeres.
