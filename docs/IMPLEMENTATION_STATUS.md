@@ -3,9 +3,9 @@
 ## Aktuális állapot
 
 - Utolsó frissítés: 2026-08-18
-- Aktuális mérföldkő: M1 – elkészült; M2 következik
-- Következő konkrét lépés: telephely-, épület-, helyiség-, osztály- és
-  szolgáltatásmodell kialakítása az M2-ben.
+- Aktuális mérföldkő: M2 – Struktúra és tartalomkezelés
+- Következő konkrét lépés: térbeli és szervezeti entitások, migráció és demo
+  struktúraadatok megvalósítása, majd tartalmi entitások és admin CRUD.
 - Ismert blokkoló tényező: a jelenlegi hoston nincs Docker/Compose, Composer,
   illetve PHP DOM/XML bővítmény; a teljes konténeres build helyben itt nem
   futtatható. A repository Docker image-e ezeket biztosítja.
@@ -16,7 +16,7 @@
 |---|---|---|---|
 | M0 | completed | Composer-validáció, lint, PHP syntax és YAML ellenőrzés sikeres | A teljes Docker build host-eszköz hiányában CI-ben ellenőrizendő |
 | M1 | completed | 2 migráció, fixture, schema sync, 6 teszt, login és két publikus tenant sikeres | Helyi PostgreSQL 16-on ellenőrizve |
-| M2 | pending | | Struktúra és tartalomkezelés |
+| M2 | in_progress | | Struktúra és tartalomkezelés |
 | M3 | pending | | Workflow, verziók és audit |
 | M4 | pending | | Publikus reszponzív felület |
 | M5 | pending | | Kereső, sablonok és visszajelzés |
@@ -49,10 +49,19 @@
 - Tenant-határt ellenőrző intézményi voter és intézményi szerepkör-ellenőrzés.
 - Rate-limitált, CSRF-védett form login és admin intézményváltó platformadminnak.
 - Két eltérő arculatú demo intézmény és minden fő szerepkörhöz fejlesztői user.
+- M2 tenantolt térbeli/szervezeti modell: Site, Building, Floor, Room,
+  Department, Service és ContactPoint, kereszt-tenant kapcsolatvédelemmel.
+- M2 tartalmi modell: InformationPage, ProcedureGuide, PatientJourney és
+  JourneyStep, Announcement, MediaAsset, publikálási időablak és státuszok.
+- Intézményenként 2 telephely, 3 épület/osztály, 5 szolgáltatás, 5 publikált
+  tájékoztató, 2 betegút, aktív és lejárt közlemény demo adatai.
+- Tenantjogosultsággal védett admin struktúra- és tartalomáttekintő.
 
 ## Nyitott feladatok
 
 - Az összes M2–M6 funkció a specifikáció szerinti sorrendben.
+- M2-ben még hátra van a létrehozás/szerkesztés/törlés admin űrlapja, a média
+  tényleges és validált feltöltése, valamint a ProcedureGuide részletes adminja.
 - Tailwind CSS integráció és vizuális rendszer.
 - Fixture csomag és két demo intézmény.
 - CI workflow véglegesítése a migrációs és funkcionális tesztekkel.
@@ -94,3 +103,7 @@
 - 2026-08-18: `composer lint` és production `composer build` – sikeres.
 - 2026-08-18: platformoldal, login GET, két tenantoldal és platformadmin login +
   admin dashboard HTTP-ellenőrzése – sikeres.
+- 2026-08-18: M2 két migrációja és kibővített fixture – sikeres; a Doctrine séma
+  szinkronban, intézményenként 2 site/5 service/5 page/2 journey/2 announcement.
+- 2026-08-18: M2 köztes ellenőrzés – 8 teszt, 11 assertion; lint és production
+  build sikeres; az admin tartalomáttekintő HTTP 200 választ ad.

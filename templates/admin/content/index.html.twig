@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+{% block title %}Struktúra és tartalom – {{ institution.shortName }}{% endblock %}
+{% block body %}
+<main id="main-content"><p><a href="{{ path('tenant_admin_dashboard',{institutionSlug:institution.slug}) }}">← Irányítópult</a></p><h1>Struktúra és tartalom</h1><p><strong>{{ institution.name }}</strong></p>
+<div class="summary-grid"><section><h2>Telephelyek</h2><p>{{ sites|length }} elem</p><ul>{% for item in sites %}<li>{{ item.name }}</li>{% endfor %}</ul></section>
+<section><h2>Osztályok</h2><p>{{ departments|length }} elem</p><ul>{% for item in departments %}<li>{{ item.name }}</li>{% endfor %}</ul></section>
+<section><h2>Szolgáltatások</h2><p>{{ services|length }} elem</p><ul>{% for item in services %}<li>{{ item.name }}</li>{% endfor %}</ul></section>
+<section><h2>Tájékoztatók</h2><p>{{ pages|length }} elem</p><ul>{% for item in pages %}<li>{{ item.title }} – {{ item.status.value }}</li>{% endfor %}</ul></section>
+<section><h2>Betegutak</h2><p>{{ journeys|length }} elem</p><ul>{% for item in journeys %}<li>{{ item.title }}</li>{% endfor %}</ul></section>
+<section><h2>Közlemények</h2><p>{{ announcements|length }} elem</p><ul>{% for item in announcements %}<li>{{ item.title }}</li>{% endfor %}</ul></section></div></main>
+{% endblock %}

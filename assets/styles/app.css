@@ -12,3 +12,5 @@ button { border: 0; border-radius: .4rem; background: var(--color-primary); colo
 :focus-visible { outline: 3px solid #f2a900; outline-offset: 3px; }
 .alert-danger { padding: .75rem; border-left: .3rem solid #b42318; background: #fef3f2; }
 .demo-label { display: inline-block; padding: .25rem .5rem; background: #fff3cd; font-weight: 700; }
+.summary-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(16rem,1fr)); gap: 1rem; }
+.summary-grid section { padding: 1rem; border: 1px solid #ccd5d8; border-radius: .75rem; }

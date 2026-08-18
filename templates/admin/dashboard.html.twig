@@ -17,6 +17,7 @@
             </div>
         </section>
     {% endif %}
+    {% if currentInstitution %}<p><a href="{{ path('tenant_admin_content',{institutionSlug:currentInstitution.slug}) }}">Struktúra és tartalom áttekintése</a></p>{% endif %}
     <p><a href="{{ path('app_logout') }}">Kijelentkezés</a></p>
 </main>
 {% endblock %}
