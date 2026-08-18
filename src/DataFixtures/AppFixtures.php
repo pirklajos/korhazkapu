@@ -15,10 +15,12 @@ use App\Entity\ProcedureGuide;
 use App\Entity\Membership;
 use App\Entity\Building;
 use App\Entity\ContactPoint;
+use App\Entity\ContentTemplate;
 use App\Entity\Department;
 use App\Entity\Floor;
 use App\Entity\Room;
 use App\Entity\Service;
+use App\Entity\SearchSynonym;
 use App\Entity\Site;
 use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -42,6 +44,30 @@ final class AppFixtures extends Fixture
         (new InstitutionTheme($command))->setPrimaryColor('#5B2C83')->setSecondaryColor('#EFE7F6')->setAccentColor('#2A9D8F');
 
         $manager->persist($epc); $manager->persist($command);
+        $manager->persist(new ContentTemplate(
+            'beteglatogatasi-alaptajekoztato',
+            'Beteglátogatási alaptájékoztató',
+            'Közérthető kiindulópont a látogatási rend, higiénés szabályok és kapcsolattartás bemutatásához.',
+            ['blocks' => [
+                ['type' => 'heading', 'text' => 'Látogatási rend'],
+                ['type' => 'text', 'text' => 'Kérjük, érkezés előtt ellenőrizze az osztály aktuális látogatási idejét és szabályait.'],
+                ['type' => 'heading', 'text' => 'A betegek védelmében'],
+                ['type' => 'text', 'text' => 'Fertőző tünetek esetén halassza el a látogatást, és tartsa be a helyszíni kézhigiénés előírásokat.'],
+            ]],
+            1,
+        ));
+        $manager->persist(new ContentTemplate(
+            'vizsgalatra-erkezes-alaptajekoztato',
+            'Érkezés vizsgálatra – alaptájékoztató',
+            'Szerkeszthető minta az érkezés, szükséges iratok és késés esetére.',
+            ['blocks' => [
+                ['type' => 'heading', 'text' => 'Mikor érkezzen?'],
+                ['type' => 'text', 'text' => 'Érkezzen a megadott időpont előtt 15 perccel, hogy legyen idő az adminisztrációra.'],
+                ['type' => 'heading', 'text' => 'Mit hozzon magával?'],
+                ['type' => 'text', 'text' => 'Hozza magával személyazonosító okmányait, TAJ-kártyáját, beutalóját és releváns korábbi leleteit.'],
+            ]],
+            1,
+        ));
         $this->loadStructure($manager, $epc, 'Észak-Pesti');
         $this->loadStructure($manager, $command, 'Duna-parti');
 
@@ -124,5 +150,8 @@ final class AppFixtures extends Fixture
         $active=(new Announcement($institution,'Megváltozott bejárat','megvaltozott-bejarat'))->setSummary('DEMO közlemény')->setBody('A főbejárat felújítás miatt ideiglenesen más útvonalon érhető el.')->setType('warning')->setPriority(10)->setStatus(ContentStatus::Published)->setPublicationWindow(new \DateTimeImmutable('-1 day'),new \DateTimeImmutable('+14 days'));
         $expired=(new Announcement($institution,'Korábbi parkolási korlátozás','korabbi-parkolasi-korlatozas'))->setBody('Lejárt DEMO közlemény.')->setStatus(ContentStatus::Published)->setPublicationWindow(new \DateTimeImmutable('-10 days'),new \DateTimeImmutable('-1 day'));
         $manager->persist($active); $manager->persist($expired);
+        $manager->persist(new SearchSynonym($institution,'kardiológia',['szív','szívvizsgálat','kardio']));
+        $manager->persist(new SearchSynonym($institution,'laboratórium',['labor','vérvétel','mintavétel']));
+        $manager->persist(new SearchSynonym($institution,'képalkotó diagnosztika',['ultrahang','röntgen','ct','mr']));
     }
 }

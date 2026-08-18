@@ -19,7 +19,7 @@
     <section class="public-hero">
         <div class="public-container public-hero-grid">
             <div><span class="public-kicker">Segítünk eligazodni</span><h1>Egészségügyi információk, érthetően.</h1><p>Találja meg gyorsan az ellátást, a helyszínt és a felkészüléshez szükséges tudnivalókat.</p></div>
-            <form class="public-search" action="#services" method="get" role="search"><label for="public-search">Miben segíthetünk?</label><div><input id="public-search" name="q" type="search" placeholder="Például: labor, EKG, látogatás…"><button type="submit">Keresés</button></div><small>Kereshet ellátásra, osztályra vagy telephelyre.</small></form>
+            <form class="public-search" action="{{ path('tenant_search',{institutionSlug:institution.slug}) }}" method="get" role="search"><label for="public-search">Miben segíthetünk?</label><div><input id="public-search" name="q" type="search" placeholder="Például: labor, EKG, látogatás…"><button type="submit">Keresés</button></div><small>Kereshet ellátásra, osztályra vagy telephelyre.</small></form>
         </div>
     </section>
 

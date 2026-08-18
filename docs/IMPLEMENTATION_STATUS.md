@@ -3,9 +3,9 @@
 ## Aktuális állapot
 
 - Utolsó frissítés: 2026-08-18
-- Aktuális mérföldkő: M4 – completed
-- Következő konkrét lépés: M5 adatbázis-alapú keresés, szinonimák,
-  visszajelzés és üres állapotok.
+- Aktuális mérföldkő: M5 – completed
+- Következő konkrét lépés: M6 minőségbiztosítás, reszponzív és
+  akadálymentességi audit, valamint átadási dokumentáció.
 - Ismert blokkoló tényező: nincs.
 
 ## Mérföldkövek
@@ -17,7 +17,7 @@
 | M2 | completed | Séma-validáció, 10 teszt, admin HTTP smoke teszt és production build sikeres | Teljes struktúra-, tartalom- és médiaadminisztráció |
 | M3 | completed | 12 teszt, 23 assertion, séma-validáció, admin HTTP smoke és production build sikeres | Workflow, verziók, audit és feladatirányítópult |
 | M4 | completed | 14 publikus HTTP smoke, lejárt tartalom 404, 12 teszt és production build sikeres | Reszponzív listák, adatlapok, helyszínek, kapcsolatok és nyomtatás |
-| M5 | pending | | Kereső, sablonok és visszajelzés |
+| M5 | completed | Séma-validáció, 15 teszt/28 assertion, publikus és admin HTTP smoke, production build sikeres | Kereső, szinonimák, sablonok, visszajelzés és hibaoldalak |
 | M6 | pending | | Minőségbiztosítás és átadás |
 
 ## Döntési napló
@@ -74,10 +74,18 @@
   útmutató-, tájékoztató-, betegút-, közlemény- és kapcsolati felületek.
 - Betegközpontú navigáció, morzsanavigáció, strukturált helyszínmegjelenítés és
   nyomtatási stílusok; lejárt vagy nem publikált tartalom publikus tiltása.
+- Tenantolt, adatbázis-alapú publikus kereső laikus szinonimákkal, relevancia-
+  rendezéssel és hasznos üres találati állapottal.
+- Szinonimakezelő és anonim visszajelzés-áttekintő adminfelület, CSRF-védelemmel
+  és IP/tenant alapú, 15 perces sebességkorláttal.
+- Verziózott központi tartalomsablonok intézményi piszkozatkénti átvétele,
+  forrásverzió-követéssel és frissítési jelzéssel.
+- Felhasználóbarát 404- és általános hibaoldal, valamint keresési és tartalmi
+  üres állapotok.
 
 ## Nyitott feladatok
 
-- Az összes M5–M6 funkció a specifikáció szerinti sorrendben.
+- Az M6 minőségbiztosítási és átadási feladatok.
 - Tailwind CSS integráció és vizuális rendszer.
 - CI workflow véglegesítése a migrációs és funkcionális tesztekkel.
 
@@ -120,6 +128,12 @@
   szinkronban, intézményenként 2 site/5 service/5 page/2 journey/2 announcement.
 - 2026-08-18: M2 köztes ellenőrzés – 8 teszt, 11 assertion; lint és production
   build sikeres; az admin tartalomáttekintő HTTP 200 választ ad.
+- 2026-08-18: M5 két migrációja sikeres, Doctrine mapping és adatbázisséma
+  szinkronban; 15 teszt, 28 assertion, teljes lint és production asset build
+  sikeres.
+- 2026-08-18: a szinonimás és üres keresés, a kereső/visszajelzés admin, a
+  központi sablonlista és az anonim visszajelzés POST HTTP-végponttól végpontig
+  sikeresen ellenőrizve; a teszt-visszajelzés eltávolítva.
 - 2026-08-18: mind az öt fő CRUD új-elem űrlap és a médiaoldal HTTP 200; site
   létrehozás–szerkesztőoldal–CSRF törlés végponttól végpontig sikeres.
 - 2026-08-18: valós PNG feltöltés MIME/méret/alt ellenőrzéssel sikeres, a
