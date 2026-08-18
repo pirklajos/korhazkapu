@@ -1,0 +1,12 @@
+{% extends 'admin/base.html.twig' %}
+{% block admin_title %}{{ config.label }}{% endblock %}
+{% block admin_body %}
+<main id="main-content">
+    <div class="admin-page-heading admin-page-heading-rich"><div><a class="back-link" href="{{ path(config.group == 'structure' ? 'tenant_admin_structure' : 'tenant_admin_content',{institutionSlug:institution.slug}) }}">← {{ config.group == 'structure' ? 'Struktúra' : 'Tartalom' }}</a><span class="admin-eyebrow">{{ institution.shortName }}</span><h1>{{ config.label }}</h1><p>{{ items|length }} elem áttekinthető, önálló kezelőlistája.</p></div><a class="button" href="{{ path('tenant_admin_crud_new',{institutionSlug:institution.slug,type:type}) }}">+ Új elem</a></div>
+    <section class="admin-manager-card" data-controller="list-filter">
+        <div class="manager-toolbar"><label><span class="visually-hidden">Szűrés</span><input type="search" placeholder="Szűrés név, hely vagy szobaszám alapján…" data-list-filter-target="input" data-action="input->list-filter#filter"></label><span class="count-badge">{{ items|length }} elem</span></div>
+        <ul class="manager-list">{% for item in items %}<li data-list-filter-target="row" data-filter-text="{{ (item.title ~ ' ' ~ item.meta)|lower }}"><a href="{{ path('tenant_admin_crud_edit',{institutionSlug:institution.slug,type:type,id:item.id}) }}"><span class="manager-list-main"><strong>{{ item.title }}</strong>{% if item.meta %}<small>{{ item.meta }}</small>{% endif %}</span>{% if item.status %}<span class="workflow-status workflow-status-{{ item.status }}">{{ item.status }}</span>{% endif %}<span class="manager-edit">Szerkesztés ›</span></a></li>{% else %}<li class="entity-empty">Még nincs rögzített elem.</li>{% endfor %}</ul>
+        <p class="manager-no-results" data-list-filter-target="empty" hidden>Nincs a szűrésnek megfelelő elem.</p>
+    </section>
+</main>
+{% endblock %}
