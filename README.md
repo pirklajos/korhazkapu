@@ -42,6 +42,14 @@ docker compose exec app php bin/console doctrine:migrations:migrate --no-interac
 docker compose exec app php bin/console doctrine:fixtures:load --no-interaction
 ```
 
+A feldolgozott ÉPC-HK alaprajzok alapján a K épület négy szintjének helyiségei
+és ellátásai újrafuttatható paranccsal tölthetők be. A már létező rekordokat
+frissíti, nem duplikálja:
+
+```bash
+docker compose exec app php bin/console app:import:k-building demo-epc-hk
+```
+
 Az AssetMapper production buildje a `composer build` része. A Tailwind CSS
 integráció az M1/M4 során kerül be a végleges assetfolyamatba.
 
