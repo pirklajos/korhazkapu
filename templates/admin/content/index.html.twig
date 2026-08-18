@@ -1,7 +1,7 @@
-{% extends 'base.html.twig' %}
-{% block title %}Struktúra és tartalom – {{ institution.shortName }}{% endblock %}
-{% block body %}
-<main id="main-content"><p><a href="{{ path('tenant_admin_dashboard',{institutionSlug:institution.slug}) }}">← Irányítópult</a></p><h1>Struktúra és tartalom</h1><p><strong>{{ institution.name }}</strong> · <a href="{{ path('tenant_admin_media',{institutionSlug:institution.slug}) }}">Médiafájlok</a></p>
+{% extends 'admin/base.html.twig' %}
+{% block admin_title %}Struktúra és tartalom{% endblock %}
+{% block admin_body %}
+<main id="main-content"><div class="admin-page-heading"><div><span class="admin-eyebrow">{{ institution.shortName }}</span><h1>Struktúra és tartalom</h1><p>Kezeld a beteg számára látható intézményi adatokat egy helyen.</p></div><a class="button button-secondary" href="{{ path('tenant_admin_media',{institutionSlug:institution.slug}) }}">Médiatár</a></div>
 <div class="summary-grid"><section><h2>Telephelyek</h2><p>{{ sites|length }} elem · <a href="{{ path('tenant_admin_crud_new',{institutionSlug:institution.slug,type:'site'}) }}">Új</a></p><ul>{% for item in sites %}<li><a href="{{ path('tenant_admin_crud_edit',{institutionSlug:institution.slug,type:'site',id:item.id}) }}">{{ item.name }}</a></li>{% endfor %}</ul></section>
 <section><h2>Osztályok</h2><p>{{ departments|length }} elem · <a href="{{ path('tenant_admin_crud_new',{institutionSlug:institution.slug,type:'department'}) }}">Új</a></p><ul>{% for item in departments %}<li><a href="{{ path('tenant_admin_crud_edit',{institutionSlug:institution.slug,type:'department',id:item.id}) }}">{{ item.name }}</a></li>{% endfor %}</ul></section>
 <section><h2>Szolgáltatások</h2><p>{{ services|length }} elem · <a href="{{ path('tenant_admin_crud_new',{institutionSlug:institution.slug,type:'service'}) }}">Új</a></p><ul>{% for item in services %}<li><a href="{{ path('tenant_admin_crud_edit',{institutionSlug:institution.slug,type:'service',id:item.id}) }}">{{ item.name }}</a></li>{% endfor %}</ul></section>

@@ -60,6 +60,8 @@
   osztályhoz, szolgáltatáshoz, tájékoztatóhoz és közleményhez.
 - Valódi lokális médiafeltöltés kötelező alt szöveggel, 5 MB korláttal és
   szerveroldali JPEG/PNG/WebP/PDF MIME-engedélylistával; tenantonkénti tárolás.
+- Egységes, reszponzív admin UI: asztali oldalsáv, mobilmenü, intézményi
+  kontextussáv, irányítópult-kártyák, rendezett űrlapok/listák és flash üzenetek.
 
 ## Nyitott feladatok
 
@@ -115,3 +117,5 @@
   létrehozás–szerkesztőoldal–CSRF törlés végponttól végpontig sikeres.
 - 2026-08-18: valós PNG feltöltés MIME/méret/alt ellenőrzéssel sikeres, a
   tesztadat és tesztfájl utána eltávolítva; 8 teszt és teljes lint sikeres.
+- 2026-08-18: admin UI frissítés után dashboard/content/form/media autentikált
+  HTTP 200, mobilmenü asset HTTP 200; Twig/container lint és 8 teszt sikeres.
