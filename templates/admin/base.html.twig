@@ -1,6 +1,7 @@
 {% extends 'base.html.twig' %}
 {% block title %}{% block admin_title %}Admin{% endblock %} – KórházKapu{% endblock %}
 {% block body %}
+{% set adminInstitution = currentInstitution is defined ? currentInstitution : (institution is defined ? institution : null) %}
 <div class="admin-shell" data-controller="admin-menu">
     <header class="admin-mobile-header">
         <a class="admin-brand" href="{{ path('admin_dashboard') }}"><span class="admin-brand-mark" aria-hidden="true">K</span><span>KórházKapu</span></a>
@@ -10,18 +11,17 @@
         <a class="admin-brand" href="{{ path('admin_dashboard') }}"><span class="admin-brand-mark" aria-hidden="true">K</span><span><strong>KórházKapu</strong><small>Adminisztráció</small></span></a>
         <nav aria-label="Admin navigáció">
             <a href="{{ path('admin_dashboard') }}" class="{{ app.request.attributes.get('_route') in ['admin_dashboard','tenant_admin_dashboard'] ? 'is-active' : '' }}"><span aria-hidden="true">⌂</span>Irányítópult</a>
-            {% if currentInstitution|default(institution|default(null)) %}
-                {% set navInstitution = currentInstitution|default(institution) %}
-                <a href="{{ path('tenant_admin_content',{institutionSlug:navInstitution.slug}) }}" class="{{ 'admin_content' in app.request.attributes.get('_route') or 'admin_crud' in app.request.attributes.get('_route') ? 'is-active' : '' }}"><span aria-hidden="true">▤</span>Struktúra és tartalom</a>
-                <a href="{{ path('tenant_admin_media',{institutionSlug:navInstitution.slug}) }}" class="{{ app.request.attributes.get('_route') == 'tenant_admin_media' ? 'is-active' : '' }}"><span aria-hidden="true">▧</span>Médiafájlok</a>
-                <a href="{{ path('tenant_home',{institutionSlug:navInstitution.slug}) }}"><span aria-hidden="true">↗</span>Publikus oldal</a>
+            {% if adminInstitution %}
+                <a href="{{ path('tenant_admin_content',{institutionSlug:adminInstitution.slug}) }}" class="{{ 'admin_content' in app.request.attributes.get('_route') or 'admin_crud' in app.request.attributes.get('_route') ? 'is-active' : '' }}"><span aria-hidden="true">▤</span>Struktúra és tartalom</a>
+                <a href="{{ path('tenant_admin_media',{institutionSlug:adminInstitution.slug}) }}" class="{{ app.request.attributes.get('_route') == 'tenant_admin_media' ? 'is-active' : '' }}"><span aria-hidden="true">▧</span>Médiafájlok</a>
+                <a href="{{ path('tenant_home',{institutionSlug:adminInstitution.slug}) }}"><span aria-hidden="true">↗</span>Publikus oldal</a>
             {% endif %}
         </nav>
         <div class="admin-sidebar-footer"><span class="admin-user-avatar" aria-hidden="true">{{ app.user.displayName|default('A')|slice(0,1)|upper }}</span><span><strong>{{ app.user.displayName|default('Admin') }}</strong><small>{{ app.user.userIdentifier|default('') }}</small></span><a href="{{ path('app_logout') }}" aria-label="Kijelentkezés">↪</a></div>
     </aside>
     <div class="admin-workspace">
         <header class="admin-topbar">
-            <div>{% if currentInstitution|default(institution|default(null)) %}<span class="admin-eyebrow">Aktív intézmény</span><strong>{{ (currentInstitution|default(institution)).shortName }}</strong>{% else %}<strong>Platformkezelés</strong>{% endif %}</div>
+            <div>{% if adminInstitution %}<span class="admin-eyebrow">Aktív intézmény</span><strong>{{ adminInstitution.shortName }}</strong>{% else %}<strong>Platformkezelés</strong>{% endif %}</div>
             <span class="status-pill status-success"><span aria-hidden="true">●</span> Rendszer elérhető</span>
         </header>
         <div class="admin-page">
