@@ -19,6 +19,7 @@ abstract class AbstractContent extends AbstractTenantEntity
     public function setSlug(string $v):self{$this->slug=$v;return $this;}
     public function getSummary():?string{return $this->summary;} public function setSummary(?string $v):self{$this->summary=$v;return $this;}
     public function getStatus():ContentStatus{return $this->status;} public function setStatus(ContentStatus $v):self{$this->status=$v;return $this;}
+    public function getPublishedAt():?\DateTimeImmutable{return $this->publishedAt;} public function getExpiresAt():?\DateTimeImmutable{return $this->expiresAt;} public function getReviewDueAt():?\DateTimeImmutable{return $this->reviewDueAt;} public function setReviewDueAt(?\DateTimeImmutable $v):self{$this->reviewDueAt=$v;return $this;}
     public function setPublicationWindow(?\DateTimeImmutable $from,?\DateTimeImmutable $until):self{$this->publishedAt=$from;$this->expiresAt=$until;return $this;}
     public function isPubliclyVisible(?\DateTimeImmutable $now=null):bool{$now??=new \DateTimeImmutable();return $this->status===ContentStatus::Published&&(!$this->publishedAt||$this->publishedAt<=$now)&&(!$this->expiresAt||$this->expiresAt>$now);}
 }

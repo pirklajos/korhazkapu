@@ -3,9 +3,9 @@
 ## Aktuális állapot
 
 - Utolsó frissítés: 2026-08-18
-- Aktuális mérföldkő: M2 – completed
-- Következő konkrét lépés: M3 szerkesztői workflow, verziók, auditnapló és
-  felülvizsgálati határidők.
+- Aktuális mérföldkő: M3 – completed
+- Következő konkrét lépés: M4 publikus listák, adatlapok, kapcsolatok,
+  helyszínek és nyomtatási nézetek.
 - Ismert blokkoló tényező: nincs.
 
 ## Mérföldkövek
@@ -15,7 +15,7 @@
 | M0 | completed | Composer-validáció, lint, PHP syntax és YAML ellenőrzés sikeres | A teljes Docker build host-eszköz hiányában CI-ben ellenőrizendő |
 | M1 | completed | 2 migráció, fixture, schema sync, 6 teszt, login és két publikus tenant sikeres | Helyi PostgreSQL 16-on ellenőrizve |
 | M2 | completed | Séma-validáció, 10 teszt, admin HTTP smoke teszt és production build sikeres | Teljes struktúra-, tartalom- és médiaadminisztráció |
-| M3 | pending | | Workflow, verziók és audit |
+| M3 | completed | 12 teszt, 23 assertion, séma-validáció, admin HTTP smoke és production build sikeres | Workflow, verziók, audit és feladatirányítópult |
 | M4 | pending | | Publikus reszponzív felület |
 | M5 | pending | | Kereső, sablonok és visszajelzés |
 | M6 | pending | | Minőségbiztosítás és átadás |
@@ -66,10 +66,14 @@
 - Betegút-lépések rendezett létrehozása, szerkesztése és törlése, valamint a
   vizsgálati felkészülés részletes, strukturált mezőinek kezelése.
 - Tenantvédett média-megnyitás és CSRF-védett fájltörlés.
+- Szerepkörvezérelt szerkesztői workflow kötelező visszaküldési megjegyzéssel,
+  publikálás előtti automatikus verzióval és piszkozatkénti visszaállítással.
+- Tenantolt auditnapló, felülvizsgálati határidő és valós tartalmi
+  feladatmutatókat megjelenítő admin irányítópult.
 
 ## Nyitott feladatok
 
-- Az összes M3–M6 funkció a specifikáció szerinti sorrendben.
+- Az összes M4–M6 funkció a specifikáció szerinti sorrendben.
 - Tailwind CSS integráció és vizuális rendszer.
 - CI workflow véglegesítése a migrációs és funkcionális tesztekkel.
 

@@ -14,6 +14,7 @@
             {% if adminInstitution %}
                 <a href="{{ path('tenant_admin_content',{institutionSlug:adminInstitution.slug}) }}" class="{{ 'admin_content' in app.request.attributes.get('_route') or 'admin_crud' in app.request.attributes.get('_route') ? 'is-active' : '' }}"><span aria-hidden="true">▤</span>Struktúra és tartalom</a>
                 <a href="{{ path('tenant_admin_media',{institutionSlug:adminInstitution.slug}) }}" class="{{ app.request.attributes.get('_route') == 'tenant_admin_media' ? 'is-active' : '' }}"><span aria-hidden="true">▧</span>Médiafájlok</a>
+                <a href="{{ path('tenant_admin_audit',{institutionSlug:adminInstitution.slug}) }}" class="{{ app.request.attributes.get('_route') == 'tenant_admin_audit' ? 'is-active' : '' }}"><span aria-hidden="true">◷</span>Auditnapló</a>
                 <a href="{{ path('tenant_home',{institutionSlug:adminInstitution.slug}) }}"><span aria-hidden="true">↗</span>Publikus oldal</a>
             {% endif %}
         </nav>
