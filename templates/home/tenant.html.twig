@@ -2,6 +2,48 @@
 {% block title %}{{ institution.name }}{% endblock %}
 {% block stylesheets %}{{ parent() }}{% if institution.theme %}<style>:root { {% for name, value in institution.theme.cssVariables %}{{ name }}: {{ value }};{% endfor %} }</style>{% endif %}{% endblock %}
 {% block body %}
-<header class="site-header"><strong>{{ institution.shortName }}</strong></header>
-<main id="main-content"><p class="demo-label">DEMO intézmény</p><h1>{{ institution.name }}</h1><p>{{ institution.centralAddress }}</p>{% if institution.phone %}<p><a href="tel:{{ institution.phone|replace({' ': ''}) }}">{{ institution.phone }}</a></p>{% endif %}{% if app.user %}<p><a href="{{ path('tenant_admin_dashboard', {institutionSlug: institution.slug}) }}">Admin irányítópult</a></p>{% endif %}</main>
+<header class="public-header">
+    <div class="public-utility"><div class="public-container"><span>Hivatalos intézményi tájékoztató oldal</span><a href="#accessibility">Akadálymentesség</a></div></div>
+    <div class="public-navbar public-container">
+        <a class="public-logo" href="{{ path('tenant_home',{institutionSlug:institution.slug}) }}" aria-label="{{ institution.name }} – főoldal"><span aria-hidden="true">+</span><span><strong>{{ institution.shortName }}</strong><small>{{ institution.name }}</small></span></a>
+        <nav aria-label="Fő navigáció"><a href="#services">Ellátások</a><a href="#sites">Telephelyek</a><a href="#journeys">Betegutak</a><a href="#contact">Kapcsolat</a></nav>
+        {% if app.user %}<a class="public-admin-link" href="{{ path('tenant_admin_dashboard',{institutionSlug:institution.slug}) }}">Admin</a>{% endif %}
+    </div>
+</header>
+
+{% for announcement in announcements %}
+<aside class="public-alert public-alert-{{ announcement.type }}" aria-label="Aktuális közlemény"><div class="public-container"><span class="public-alert-icon" aria-hidden="true">!</span><div><strong>{{ announcement.title }}</strong><p>{{ announcement.body }}</p></div></div></aside>
+{% endfor %}
+
+<main id="main-content" class="public-main">
+    <section class="public-hero">
+        <div class="public-container public-hero-grid">
+            <div><span class="public-kicker">Segítünk eligazodni</span><h1>Egészségügyi információk, érthetően.</h1><p>Találja meg gyorsan az ellátást, a helyszínt és a felkészüléshez szükséges tudnivalókat.</p></div>
+            <form class="public-search" action="#services" method="get" role="search"><label for="public-search">Miben segíthetünk?</label><div><input id="public-search" name="q" type="search" placeholder="Például: labor, EKG, látogatás…"><button type="submit">Keresés</button></div><small>Kereshet ellátásra, osztályra vagy telephelyre.</small></form>
+        </div>
+    </section>
+
+    <section class="public-section public-container" aria-labelledby="quick-title"><div class="public-section-heading"><div><span class="public-kicker">Gyakori ügyek</span><h2 id="quick-title">Miben segíthetünk?</h2></div></div><div class="public-quick-grid">
+        <a href="#services"><span aria-hidden="true">⌕</span><strong>Ellátást keresek</strong><small>Szakrendelések és vizsgálatok</small></a>
+        <a href="#journeys"><span aria-hidden="true">✓</span><strong>Vizsgálatra készülök</strong><small>Teendők lépésről lépésre</small></a>
+        <a href="#sites"><span aria-hidden="true">⌖</span><strong>Hová kell mennem?</strong><small>Épületek és megközelítés</small></a>
+        <a href="#contact"><span aria-hidden="true">☎</span><strong>Kapcsolatot keresek</strong><small>Telefon és ügyintézés</small></a>
+    </div></section>
+
+    <section id="services" class="public-section public-section-tinted"><div class="public-container"><div class="public-section-heading"><div><span class="public-kicker">Betegellátás</span><h2>Fontos ellátások</h2></div><a href="#services">Összes ellátás →</a></div><div class="public-card-grid">
+        {% for service in services %}<article class="public-card"><span class="public-card-icon" aria-hidden="true">{{ loop.index is odd ? '✚' : '●' }}</span><h3>{{ service.name }}</h3><p>{{ service.summary }}</p>{% if service.site %}<small>⌖ {{ service.site.name }}</small>{% endif %}<a href="#contact" aria-label="{{ service.name }} részletei">Részletek →</a></article>{% else %}<p>Az ellátások feltöltése folyamatban van.</p>{% endfor %}
+    </div></div></section>
+
+    <section id="journeys" class="public-section public-container"><div class="public-section-heading"><div><span class="public-kicker">Felkészülés</span><h2>Kiemelt betegutak</h2></div></div><div class="public-journey-grid">
+        {% for journey in journeys %}<article><div class="public-step-number">{{ loop.index }}</div><div><h3>{{ journey.title }}</h3><p>{{ journey.summary }}</p><span>{{ journey.steps|length }} lépésből álló útmutató</span></div><a href="#contact" aria-label="{{ journey.title }} megnyitása">→</a></article>{% else %}<p>A betegutak feltöltése folyamatban van.</p>{% endfor %}
+    </div></section>
+
+    <section id="sites" class="public-section public-section-dark"><div class="public-container"><div class="public-section-heading"><div><span class="public-kicker">Helyszínek</span><h2>Telephelyeink</h2></div></div><div class="public-site-grid">
+        {% for site in sites %}<article><span aria-hidden="true">⌖</span><div><h3>{{ site.name }}</h3><p>{{ site.address }}</p>{% if site.accessibility %}<small>♿ {{ site.accessibility }}</small>{% endif %}</div>{% if site.mapUrl %}<a href="{{ site.mapUrl }}" rel="noopener noreferrer">Térkép →</a>{% endif %}</article>{% endfor %}
+    </div></div></section>
+
+    <section id="contact" class="public-contact public-container"><div><span class="public-kicker">Betegirányítás</span><h2>Kérdése van? Segítünk.</h2><p>Munkatársaink segítenek eligazodni az ellátások és helyszínek között.</p></div><div class="public-contact-links">{% if institution.phone %}<a href="tel:{{ institution.phone|replace({' ': ''}) }}"><small>Telefon</small><strong>{{ institution.phone }}</strong></a>{% endif %}{% if institution.email %}<a href="mailto:{{ institution.email }}"><small>E-mail</small><strong>{{ institution.email }}</strong></a>{% endif %}</div></section>
+</main>
+
+<footer id="accessibility" class="public-footer"><div class="public-container"><div><strong>{{ institution.name }}</strong><p>{{ institution.centralAddress }}</p></div><div><a href="#main-content">Akadálymentességi információk</a>{% if institution.privacyUrl %}<a href="{{ institution.privacyUrl }}">Adatkezelés</a>{% endif %}<span>DEMO környezet</span></div></div></footer>
 {% endblock %}
